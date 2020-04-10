@@ -1,6 +1,6 @@
 <?php
 
-namespace Spreadaurora\Ci4_blog\Traits;
+namespace Adnduweb\Ci4_blog\Traits;
 
 trait ArticleTrait
 {

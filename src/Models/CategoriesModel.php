@@ -7,12 +7,12 @@
  * @license https://opensource.org/licenses/MIT MIT License
  */
 
-namespace Spreadaurora\Ci4_blog\Models;
+namespace Adnduweb\Ci4_blog\Models;
 
 use CodeIgniter\Model;
-use Spreadaurora\Ci4_blog\Entities\Categorie;
+use Adnduweb\Ci4_blog\Entities\Categorie;
 
-/** 
+/**
  * Class CatModel
  *
  * @package App\Models
@@ -25,7 +25,7 @@ class CategoriesModel extends Model
     private $categories;
 
     use \Tatter\Relations\Traits\ModelTrait;
-    use \Spreadaurora\Ci4_logs\Traits\AuditsTrait;
+    use \Adnduweb\Ci4_logs\Traits\AuditsTrait;
     protected $afterInsert = ['auditInsert'];
     protected $afterUpdate = ['auditUpdate'];
     protected $afterDelete = ['auditDelete'];

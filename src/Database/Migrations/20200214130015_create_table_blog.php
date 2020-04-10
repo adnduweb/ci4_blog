@@ -1,6 +1,6 @@
 <?php
 
-namespace Spreadaurora\ci4_page\Database\Migrations;
+namespace Adnduweb\ci4_page\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
@@ -29,7 +29,7 @@ class Migration_create_table_blog extends Migration
         ];
 
         $this->forge->addField($fields);
-        $this->forge->addKey('id_article', true); 
+        $this->forge->addKey('id_article', true);
         $this->forge->addKey('created_at');
         $this->forge->addKey('updated_at');
         $this->forge->addKey('deleted_at');
@@ -65,7 +65,7 @@ class Migration_create_table_blog extends Migration
         ];
 
         $this->forge->addField($fields);
-        $this->forge->addKey('id_categorie', true); 
+        $this->forge->addKey('id_categorie', true);
         $this->forge->addKey('created_at');
         $this->forge->addKey('updated_at');
         $this->forge->addKey('deleted_at');
@@ -97,7 +97,7 @@ class Migration_create_table_blog extends Migration
         ];
 
         $this->forge->addField($fields);
-        $this->forge->addKey('id_tag', true); 
+        $this->forge->addKey('id_tag', true);
         $this->forge->addKey('created_at');
         $this->forge->addKey('updated_at');
         $this->forge->addKey('deleted_at');
@@ -132,7 +132,7 @@ class Migration_create_table_blog extends Migration
         ];
 
         $this->forge->addField($fields);
-        $this->forge->addKey('id_comment', true); 
+        $this->forge->addKey('id_comment', true);
         $this->forge->addKey('created_at');
         $this->forge->addKey('updated_at');
         $this->forge->addKey('deleted_at');

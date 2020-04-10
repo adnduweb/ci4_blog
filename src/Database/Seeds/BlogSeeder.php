@@ -1,12 +1,12 @@
 <?php
 
-namespace Spreadaurora\Ci4_blog\Database\Seeds;
+namespace Adnduweb\Ci4_blog\Database\Seeds;
 
 use joshtronic\LoremIpsum;
 
 class BlogSeeder extends \CodeIgniter\Database\Seeder
 {
-    //\\Spreadaurora\\Ci4_blog\\Database\\Seeds\\BlogSeeder
+    //\\Adnduweb\\Ci4_blog\\Database\\Seeds\\BlogSeeder
     /**
      * @return mixed|void
      */
@@ -116,7 +116,7 @@ class BlogSeeder extends \CodeIgniter\Database\Seeder
             'right'             => 18,
             'position'          => 1,
             'section'           => 0,
-            'module'            => 'Spreadaurora\Ci4_blog',
+            'module'            => 'Adnduweb\Ci4_blog',
             'class_name'        => 'AdminBlog',
             'active'            =>  1,
             'icon'              => '',
@@ -142,7 +142,7 @@ class BlogSeeder extends \CodeIgniter\Database\Seeder
             'right'             => 13,
             'position'          => 1,
             'section'           => 0,
-            'module'            => 'Spreadaurora\Ci4_blog',
+            'module'            => 'Adnduweb\Ci4_blog',
             'class_name'        => 'AdminArticles',
             'active'            =>  1,
             'icon'              => '',
@@ -167,7 +167,7 @@ class BlogSeeder extends \CodeIgniter\Database\Seeder
             'right'             => 15,
             'position'          => 1,
             'section'           => 0,
-            'module'            => 'Spreadaurora\Ci4_blog',
+            'module'            => 'Adnduweb\Ci4_blog',
             'class_name'        => 'AdminCategorie',
             'active'            =>  1,
             'icon'              => '',
@@ -192,7 +192,7 @@ class BlogSeeder extends \CodeIgniter\Database\Seeder
             'right'             => 17,
             'position'          => 1,
             'section'           => 0,
-            'module'            => 'Spreadaurora\Ci4_blog',
+            'module'            => 'Adnduweb\Ci4_blog',
             'class_name'        => 'AdminTags',
             'active'            =>  1,
             'icon'              => '',
@@ -280,7 +280,7 @@ class BlogSeeder extends \CodeIgniter\Database\Seeder
 
 
         /**
-         * 
+         *
          * Gestion des permissions
          */
         $rowsPermissionsArticles = [
@@ -318,7 +318,7 @@ class BlogSeeder extends \CodeIgniter\Database\Seeder
         //Gestion des module
         $rowsModulePages = [
             'name'       => 'blog',
-            'namespace'  => 'Spreadaurora\Ci4_blog',
+            'namespace'  => 'Adnduweb\Ci4_blog',
             'active'     => 1,
             'version'    => '1.0.2',
             'created_at' =>  date('Y-m-d H:i:s')

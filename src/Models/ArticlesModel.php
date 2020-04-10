@@ -7,10 +7,10 @@
  * @license https://opensource.org/licenses/MIT MIT License
  */
 
-namespace Spreadaurora\Ci4_blog\Models;
+namespace Adnduweb\Ci4_blog\Models;
 
 use CodeIgniter\Model;
-use Spreadaurora\Ci4_blog\Entities\Article;
+use Adnduweb\Ci4_blog\Entities\Article;
 
 /**
  * Class ArticleModel
@@ -25,7 +25,7 @@ class ArticlesModel extends Model
     private $article_table;
 
     use \Tatter\Relations\Traits\ModelTrait;
-    use \Spreadaurora\Ci4_logs\Traits\AuditsTrait;
+    use \Adnduweb\Ci4_logs\Traits\AuditsTrait;
     protected $afterInsert = ['auditInsert'];
     protected $afterUpdate = ['auditUpdate'];
     protected $afterDelete = ['auditDelete'];
@@ -44,7 +44,7 @@ class ArticlesModel extends Model
     ];
     protected $validationMessages = [];
     protected $skipValidation     = false;
- 
+
     /**
      * ArticleModel constructor.
      *

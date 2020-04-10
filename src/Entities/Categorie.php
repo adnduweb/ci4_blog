@@ -1,6 +1,6 @@
 <?php
 
-namespace Spreadaurora\Ci4_blog\Entities;
+namespace Adnduweb\Ci4_blog\Entities;
 
 use CodeIgniter\Entity;
 
@@ -69,7 +69,7 @@ class Categorie extends Entity
                 return $lang->meta_title ?? null;
             }
         }
-    } 
+    }
 
 
     public function _prepareLang()

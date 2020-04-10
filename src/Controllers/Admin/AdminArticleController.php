@@ -1,13 +1,13 @@
 <?php
 
-namespace Spreadaurora\Ci4_blog\Controllers\Admin;
+namespace Adnduweb\Ci4_blog\Controllers\Admin;
 
 use App\Controllers\Admin\AdminController;
 use App\Libraries\AssetsBO;
 use App\Libraries\Tools;
-use Spreadaurora\Ci4_blog\Entities\Article;
-use Spreadaurora\Ci4_blog\Models\ArticlesModel;
-use Spreadaurora\Ci4_blog\Models\CategoriesModel;
+use Adnduweb\Ci4_blog\Entities\Article;
+use Adnduweb\Ci4_blog\Models\ArticlesModel;
+use Adnduweb\Ci4_blog\Models\CategoriesModel;
 
 /**
  * Class Article
@@ -19,15 +19,15 @@ class AdminArticleController extends AdminController
 
     use \App\Traits\BuilderTrait;
     use \App\Traits\ModuleTrait;
-    use \Spreadaurora\Ci4_blog\Traits\ArticleTrait;
+    use \Adnduweb\Ci4_blog\Traits\ArticleTrait;
 
     /**
-     * @var \Spreadaurora\Ci4_blog\Models\ArticlesModel
+     * @var \Adnduweb\Ci4_blog\Models\ArticlesModel
      */
     public $tableModel;
 
     /**
-     * @var \Spreadaurora\Ci4_blog\Models\CategoriesModel
+     * @var \Adnduweb\Ci4_blog\Models\CategoriesModel
      */
     private $categories_model;
 
@@ -36,7 +36,7 @@ class AdminArticleController extends AdminController
     protected $idModule;
     public $controller = 'blog';
     public $item = 'blog';
-    public $type = 'Spreadaurora/Ci4_blog';
+    public $type = 'Adnduweb/Ci4_blog';
     public $pathcontroller  = '/public/blog/articles';
     public $fieldList = 'name';
     public $add = true;
@@ -88,7 +88,7 @@ class AdminArticleController extends AdminController
                 return redirect()->to('/' . env('CI_SITE_AREA') . '/' . user()->id_company . '/public/pages');
             }
         }
-       
+
         $this->data['form']->builders = [];
         $this->data['form']->id_module = $this->idModule;
         $this->data['form']->id_item = $id;
@@ -105,10 +105,10 @@ class AdminArticleController extends AdminController
         $this->data['form']->gettype = $this->getType();
         $this->data['form']->categories =  $this->categories_model->getlist();
         //print_r($this->data['form']->categories); exit;
-       
+
         parent::renderForm($id);
         $this->data['edit_title'] =lang('Core.edit_article');
-        return view($this->get_current_theme_view('form', 'Spreadaurora/Ci4_blog'), $this->data);
+        return view($this->get_current_theme_view('form', 'Adnduweb/Ci4_blog'), $this->data);
     }
 
     public function postProcessEdit($param)
@@ -121,13 +121,13 @@ class AdminArticleController extends AdminController
             Tools::set_message('danger', $this->validator->getErrors(), lang('Core.warning_error'));
             return redirect()->back()->withInput();
         }
- 
+
         // Try to create the user
         $articleBase = new Article($this->request->getPost());
         $this->lang = $this->request->getPost('lang');
         $articleBase->slug = "/" . strtolower(preg_replace('/[^a-zA-Z0-9\-]/', '', preg_replace('/\s+/', '-', $articleBase->slug)));
 
-        // Les images 
+        // Les images
         $articleBase->picture_one = $this->getImagesPrep($articleBase->getPictureOneAtt());
         $articleBase->picture_header = $this->getImagesPrep($articleBase->getPictureheaderAtt());
 

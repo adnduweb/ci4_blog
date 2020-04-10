@@ -3,7 +3,7 @@
 <div class="kt-content  kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor" id="kt_content">
 	<?= form_open_multipart('', ['id' => 'kt_apps_user_add_user_form', 'class' => 'kt-form', 'novalidate' => false]); ?>
 	<input type="hidden" name="action" value="<?= $action; ?>" />
-	<input type="hidden" name="module" value="<?= base64_encode('Spreadaurora\Ci4_blog'); ?>" />
+	<input type="hidden" name="module" value="<?= base64_encode('Adnduweb\Ci4_blog'); ?>" />
 	<input type="hidden" name="controller" value="AdminArticleController" />
 
 
@@ -47,7 +47,7 @@
 							<div class="kt-form__body">
 								<div class="kt-section kt-section--first">
 									<div class="kt-section__body">
-										<?= $this->include('\Spreadaurora\Ci4_blog\Views\Admin\Themes\metronic\__form_section\general') ?>
+										<?= $this->include('\Adnduweb\Ci4_blog\Views\Admin\Themes\metronic\__form_section\general') ?>
 									</div>
 								</div>
 							</div>

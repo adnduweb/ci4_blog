@@ -1,7 +1,7 @@
 <?php
 
 
-$routes->group(CI_SITE_AREA, ['namespace' => 'Spreadaurora\Ci4_blog\Controllers\Admin', 'filter' => 'apiauth'], function ($routes) {
+$routes->group(CI_SITE_AREA, ['namespace' => 'Adnduweb\Ci4_blog\Controllers\Admin', 'filter' => 'apiauth'], function ($routes) {
 
     $routes->get('(:num)/(:any)/blog/articles', 'AdminArticleController::renderViewList', ['as' => 'page-article']);
     $routes->get('(:num)/(:any)/blog/articles/edit/(:any)', 'AdminArticleController::renderForm/$3');

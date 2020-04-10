@@ -11,10 +11,10 @@ var KTAppArticlesListDatatable = function() {
                             url: basePath + segementAdmin + "/sp-admin-ajax",
                             params: {
                                 ajax: true,
-                                controller: 'AdminArticlesController',
+                                controller: 'AdminArticleController',
                                 action: 'list',
                                 value: '',
-                                module: window.btoa('Spreadaurora/Ci4_blog'),
+                                module: window.btoa('Adnduweb/Ci4_blog'),
                                 _id_company: _id_company
                             }
                         }
@@ -65,7 +65,7 @@ var KTAppArticlesListDatatable = function() {
                     }
                 },
                 columns: [{
-                        field: "id_page",
+                        field: "id_article",
                         title: "#",
                         sortable: !1,
                         width: 20,
@@ -79,8 +79,8 @@ var KTAppArticlesListDatatable = function() {
                         title: _LANG_.name,
                         width: 200,
                         template: function(t) {
-                            //return '\t\t\t\t\t\t\t<div class="dropdown">\t\t\t\t\t\t\t\t<a href="javascript:;" class="btn btn-sm btn-clean btn-icon btn-icon-md" data-toggle="dropdown">\t\t\t\t\t\t\t\t\t<i class="flaticon-more-1"></i>\t\t\t\t\t\t\t\t</a>\t\t\t\t\t\t\t\t<div class="dropdown-menu dropdown-menu-right">\t\t\t\t\t\t\t\t\t<ul class="kt-nav">\t\t\t\t\t\t\t\t\t\t<li class="kt-nav__item">\t\t\t\t\t\t\t\t\t\t\t<a href="#" data-controller="roles" data-action="actionView" data-value="' + t.id_page + '" class="actioncontroller kt-nav__link">\t\t\t\t\t\t\t\t\t\t\t\t<i class="kt-nav__link-icon flaticon2-expand"></i>\t\t\t\t\t\t\t\t\t\t\t\t<span class="kt-nav__link-text">' + _LANG_.view + '</span>\t\t\t\t\t\t\t\t\t\t\t</a>\t\t\t\t\t\t\t\t\t\t</li>\t\t\t\t\t\t\t\t\t\t<li class="kt-nav__item">\t\t\t\t\t\t\t\t\t\t\t<a href="' + basePath + segementAdmin + '/pages/detail/' + t.id_page + '" class="kt-nav__link">\t\t\t\t\t\t\t\t\t\t\t\t<i class="kt-nav__link-icon flaticon2-contract"></i>\t\t\t\t\t\t\t\t\t\t\t\t<span class="kt-nav__link-text">' + _LANG_.edit + '</span>\t\t\t\t\t\t\t\t\t\t\t</a>\t\t\t\t\t\t\t\t\t\t</li>\t\t\t\t\t\t\t\t\t\t<li class="kt-nav__item">\t\t\t\t\t\t\t\t\t\t\t<a href="#" data-id="' + t.id_page + '" class="deleterowKtdatatable kt-nav__link">\t\t\t\t\t\t\t\t\t\t\t\t<i class="kt-nav__link-icon flaticon2-trash"></i>\t\t\t\t\t\t\t\t\t\t\t\t<span class="kt-nav__link-text">' + _LANG_.delete + '</span>\t\t\t\t\t\t\t\t\t\t\t</a>\t\t\t\t\t\t\t\t\t\t</li>\t\t\t\t\t\t\t\t\t\t</ul>\t\t\t\t\t\t\t\t</div>\t\t\t\t\t\t\t</div>\t\t\t\t\t\t'
-                            var template = '<a href="' + startUrl + '/public/pages/edit/' + t.id_page + '" class="kt-nav__link"> ' + t.name + '</a>';
+                            //return '\t\t\t\t\t\t\t<div class="dropdown">\t\t\t\t\t\t\t\t<a href="javascript:;" class="btn btn-sm btn-clean btn-icon btn-icon-md" data-toggle="dropdown">\t\t\t\t\t\t\t\t\t<i class="flaticon-more-1"></i>\t\t\t\t\t\t\t\t</a>\t\t\t\t\t\t\t\t<div class="dropdown-menu dropdown-menu-right">\t\t\t\t\t\t\t\t\t<ul class="kt-nav">\t\t\t\t\t\t\t\t\t\t<li class="kt-nav__item">\t\t\t\t\t\t\t\t\t\t\t<a href="#" data-controller="roles" data-action="actionView" data-value="' + t.id_article + '" class="actioncontroller kt-nav__link">\t\t\t\t\t\t\t\t\t\t\t\t<i class="kt-nav__link-icon flaticon2-expand"></i>\t\t\t\t\t\t\t\t\t\t\t\t<span class="kt-nav__link-text">' + _LANG_.view + '</span>\t\t\t\t\t\t\t\t\t\t\t</a>\t\t\t\t\t\t\t\t\t\t</li>\t\t\t\t\t\t\t\t\t\t<li class="kt-nav__item">\t\t\t\t\t\t\t\t\t\t\t<a href="' + basePath + segementAdmin + '/blog/articles/detail/' + t.id_article + '" class="kt-nav__link">\t\t\t\t\t\t\t\t\t\t\t\t<i class="kt-nav__link-icon flaticon2-contract"></i>\t\t\t\t\t\t\t\t\t\t\t\t<span class="kt-nav__link-text">' + _LANG_.edit + '</span>\t\t\t\t\t\t\t\t\t\t\t</a>\t\t\t\t\t\t\t\t\t\t</li>\t\t\t\t\t\t\t\t\t\t<li class="kt-nav__item">\t\t\t\t\t\t\t\t\t\t\t<a href="#" data-id="' + t.id_article + '" class="deleterowKtdatatable kt-nav__link">\t\t\t\t\t\t\t\t\t\t\t\t<i class="kt-nav__link-icon flaticon2-trash"></i>\t\t\t\t\t\t\t\t\t\t\t\t<span class="kt-nav__link-text">' + _LANG_.delete + '</span>\t\t\t\t\t\t\t\t\t\t\t</a>\t\t\t\t\t\t\t\t\t\t</li>\t\t\t\t\t\t\t\t\t\t</ul>\t\t\t\t\t\t\t\t</div>\t\t\t\t\t\t\t</div>\t\t\t\t\t\t'
+                            var template = '<a href="' + startUrl + '/public/blog/articles/edit/' + t.id_article + '" class="kt-nav__link"> ' + t.name + '</a>';
                             return template;
                         }
 
@@ -100,6 +100,31 @@ var KTAppArticlesListDatatable = function() {
                         type: "meta_description",
 
                     }, {
+                        //$type (1 = publied, 2 = wait corrected, 3 = wait publied, 4 = brouillon)
+                        field: "published",
+                        title: _LANG_.etat,
+                        sortable: !1,
+                        width: 150,
+                        template: function(t) {
+                            var classe = '';
+                            var text = '';
+                            if (t.type == '1') {
+                                classe = "btn-label-brand";
+                                text = _LANG_.publied;
+                            } else if (t.type == '2') {
+                                classe = "btn-label-success";
+                                text = _LANG_.wait_corrected;
+                            } else if (t.type == '3') {
+                                classe = "btn-label-warning";
+                                text = _LANG_.wait_publied;
+                            } else if (t.type == '4') {
+                                classe = "btn-label-danger";
+                                text = _LANG_.brouillon;
+                            }
+                            return '<span class="btn btn-bold btn-sm btn-font-sm ' + classe + '">' + text + "</span>";
+                        }
+
+                    }, {
                         field: "created_at",
                         title: _LANG_.date_create,
                         type: "date",
@@ -116,20 +141,20 @@ var KTAppArticlesListDatatable = function() {
                         autoHide: !1,
                         overflow: "visible",
                         template: function(t) {
-                            //return '\t\t\t\t\t\t\t<div class="dropdown">\t\t\t\t\t\t\t\t<a href="javascript:;" class="btn btn-sm btn-clean btn-icon btn-icon-md" data-toggle="dropdown">\t\t\t\t\t\t\t\t\t<i class="flaticon-more-1"></i>\t\t\t\t\t\t\t\t</a>\t\t\t\t\t\t\t\t<div class="dropdown-menu dropdown-menu-right">\t\t\t\t\t\t\t\t\t<ul class="kt-nav">\t\t\t\t\t\t\t\t\t\t<li class="kt-nav__item">\t\t\t\t\t\t\t\t\t\t\t<a href="#" data-controller="roles" data-action="actionView" data-value="' + t.id_page + '" class="actioncontroller kt-nav__link">\t\t\t\t\t\t\t\t\t\t\t\t<i class="kt-nav__link-icon flaticon2-expand"></i>\t\t\t\t\t\t\t\t\t\t\t\t<span class="kt-nav__link-text">' + _LANG_.view + '</span>\t\t\t\t\t\t\t\t\t\t\t</a>\t\t\t\t\t\t\t\t\t\t</li>\t\t\t\t\t\t\t\t\t\t<li class="kt-nav__item">\t\t\t\t\t\t\t\t\t\t\t<a href="' + basePath + segementAdmin + '/pages/detail/' + t.id_page + '" class="kt-nav__link">\t\t\t\t\t\t\t\t\t\t\t\t<i class="kt-nav__link-icon flaticon2-contract"></i>\t\t\t\t\t\t\t\t\t\t\t\t<span class="kt-nav__link-text">' + _LANG_.edit + '</span>\t\t\t\t\t\t\t\t\t\t\t</a>\t\t\t\t\t\t\t\t\t\t</li>\t\t\t\t\t\t\t\t\t\t<li class="kt-nav__item">\t\t\t\t\t\t\t\t\t\t\t<a href="#" data-id="' + t.id_page + '" class="deleterowKtdatatable kt-nav__link">\t\t\t\t\t\t\t\t\t\t\t\t<i class="kt-nav__link-icon flaticon2-trash"></i>\t\t\t\t\t\t\t\t\t\t\t\t<span class="kt-nav__link-text">' + _LANG_.delete + '</span>\t\t\t\t\t\t\t\t\t\t\t</a>\t\t\t\t\t\t\t\t\t\t</li>\t\t\t\t\t\t\t\t\t\t</ul>\t\t\t\t\t\t\t\t</div>\t\t\t\t\t\t\t</div>\t\t\t\t\t\t'
+                            //return '\t\t\t\t\t\t\t<div class="dropdown">\t\t\t\t\t\t\t\t<a href="javascript:;" class="btn btn-sm btn-clean btn-icon btn-icon-md" data-toggle="dropdown">\t\t\t\t\t\t\t\t\t<i class="flaticon-more-1"></i>\t\t\t\t\t\t\t\t</a>\t\t\t\t\t\t\t\t<div class="dropdown-menu dropdown-menu-right">\t\t\t\t\t\t\t\t\t<ul class="kt-nav">\t\t\t\t\t\t\t\t\t\t<li class="kt-nav__item">\t\t\t\t\t\t\t\t\t\t\t<a href="#" data-controller="roles" data-action="actionView" data-value="' + t.id_article + '" class="actioncontroller kt-nav__link">\t\t\t\t\t\t\t\t\t\t\t\t<i class="kt-nav__link-icon flaticon2-expand"></i>\t\t\t\t\t\t\t\t\t\t\t\t<span class="kt-nav__link-text">' + _LANG_.view + '</span>\t\t\t\t\t\t\t\t\t\t\t</a>\t\t\t\t\t\t\t\t\t\t</li>\t\t\t\t\t\t\t\t\t\t<li class="kt-nav__item">\t\t\t\t\t\t\t\t\t\t\t<a href="' + basePath + segementAdmin + '/blog/articles/detail/' + t.id_article + '" class="kt-nav__link">\t\t\t\t\t\t\t\t\t\t\t\t<i class="kt-nav__link-icon flaticon2-contract"></i>\t\t\t\t\t\t\t\t\t\t\t\t<span class="kt-nav__link-text">' + _LANG_.edit + '</span>\t\t\t\t\t\t\t\t\t\t\t</a>\t\t\t\t\t\t\t\t\t\t</li>\t\t\t\t\t\t\t\t\t\t<li class="kt-nav__item">\t\t\t\t\t\t\t\t\t\t\t<a href="#" data-id="' + t.id_article + '" class="deleterowKtdatatable kt-nav__link">\t\t\t\t\t\t\t\t\t\t\t\t<i class="kt-nav__link-icon flaticon2-trash"></i>\t\t\t\t\t\t\t\t\t\t\t\t<span class="kt-nav__link-text">' + _LANG_.delete + '</span>\t\t\t\t\t\t\t\t\t\t\t</a>\t\t\t\t\t\t\t\t\t\t</li>\t\t\t\t\t\t\t\t\t\t</ul>\t\t\t\t\t\t\t\t</div>\t\t\t\t\t\t\t</div>\t\t\t\t\t\t'
                             var template = '<div class="dropdown">\
                         <a href="javascript:;" class="btn btn-sm btn-clean btn-icon btn-icon-md" data-toggle="dropdown">\
                         <i class="flaticon-more-1"></i></a>\
                         <div class="dropdown-menu dropdown-menu-right">\
                         <ul class="kt-nav">\
                         <li class="kt-nav__item">\
-                        <a href="' + startUrl + '/public/pages/edit/' + t.id_page + '" class="kt-nav__link">\
+                        <a href="' + startUrl + '/public/blog/articles/edit/' + t.id_article + '" class="kt-nav__link">\
                         <i class="kt-nav__link-icon flaticon2-contract"></i>\
                         <span class="kt-nav__link-text">' + _LANG_.edit + '</span>\
                         </a></li>';
-                            if (t.id_page != '1') {
+                            if (t.id_article != '1') {
                                 template += ' <li class="kt-nav__item">\
-                            <a href="#" data-id="' + t.id_page + '" class="deleterowKtdatatable kt-nav__link">\
+                            <a href="#" data-id="' + t.id_article + '" class="deleterowKtdatatable kt-nav__link">\
                             <i class="kt-nav__link-icon flaticon2-trash"></i>\
                             <span class="kt-nav__link-text">' + _LANG_.delete + '</span>\
                             </a>\
@@ -192,7 +217,7 @@ var KTAppArticlesListDatatable = function() {
                                     selected: a.get(),
                                     active: st
                                 },
-                                module: window.btoa('Spreadaurora/ci4_page')
+                                module: window.btoa('Adnduweb/ci4_page')
                             },
                             dataType: "json",
                             success: function(result, status, xhr) {
@@ -251,7 +276,7 @@ var KTAppArticlesListDatatable = function() {
                                 value: {
                                     selected: selected
                                 },
-                                module: window.btoa('Spreadaurora/ci4_page')
+                                module: window.btoa('Adnduweb/ci4_page')
                             },
                             dataType: "json",
                             success: function(result, status, xhr) {
