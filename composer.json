@@ -1,5 +1,5 @@
 {
-    "name": "adnduweb/ci4_page",
+    "name": "adnduweb/ci4_blog",
     "type": "library",
     "description": "An Example of CodeIgniter 4 Blog module",
     "keywords": [
@@ -7,7 +7,7 @@
         "codeigniter4",
         "codeigniter"
     ],
-    "homepage": "https://github.com/adnduweb/ci4_page",
+    "homepage": "https://github.com/adnduweb/ci4_blog",
     "license": "MIT",
     "authors": [{
         "name": "Fabrice Loru",
@@ -17,7 +17,7 @@
     }],
     "require": {
         "php": "^7.2",
-        "adnduweb/ci4_page": "^1"
+        "adnduweb/ci4_page": "^1",
         "adnduweb/ci4_menu": "^1"
     },
     "require-dev": {
