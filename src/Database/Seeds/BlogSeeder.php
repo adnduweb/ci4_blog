@@ -16,19 +16,18 @@ class BlogSeeder extends \CodeIgniter\Database\Seeder
         // Define default project setting templates
         $rows = [
             [
-                'id_article'         => 1,
-                'id_categorie'       => 1,
-                'author_created'     => 1,
-                'author_update'      => 1,
-                'active'             => 1,
-                'important'          => 1,
-                'slug'               => '/jkljk-dsfgsdfg-fgsdfgsdfg',
-                'picture_one'        => 4,
-                'picture_header'     => 5,
-                'no_follow_no_index' => 0,
-                'type'               => 1,
-                'order'              => 0,
-                'created_at'         => date('Y-m-d H:i:s'),
+                'id_article'           => 1,
+                'id_categorie_default' => 1,
+                'author_created'       => 1,
+                'author_update'        => 1,
+                'active'               => 1,
+                'important'            => 1,
+                'picture_one'          => null,
+                'picture_header'       => null,
+                'no_follow_no_index'   => 0,
+                'type'                 => 1,
+                'order'                => 0,
+                'created_at'           => date('Y-m-d H:i:s'),
             ]
 
         ];
@@ -41,7 +40,8 @@ class BlogSeeder extends \CodeIgniter\Database\Seeder
                 'description'       => $lipsum->paragraphs(5),
                 'meta_title'        => $lipsum->sentence(),
                 'meta_description'  => $lipsum->sentence(),
-                'tags'              => 'test,gsdfgsdf,fgfsdgdsfg,fgsdfg'
+                'tags'              => 'test,gsdfgsdf,fgfsdgdsfg,fgsdfg',
+                'slug'              => '/jkljk-dsfgsdfg-fgsdfgsdfg',
             ]
 
         ];
@@ -72,8 +72,9 @@ class BlogSeeder extends \CodeIgniter\Database\Seeder
         $rowsCat = [
             [
                 'id_categorie' => 1,
-                'parent'       => 0,
+                'id_parent'    => 0,
                 'order'        => 1,
+                'active'       => 1,
                 'created_at'   => date('Y-m-d H:i:s'),
             ]
 
@@ -83,7 +84,8 @@ class BlogSeeder extends \CodeIgniter\Database\Seeder
                 'id_categorie'      => 1,
                 'id_lang'           => 1,
                 'name'              => 'Défaut',
-                'description_short' => $lipsum->sentence()
+                'description_short' => $lipsum->sentence(),
+                'slug'              => 'default'
             ]
 
         ];
@@ -109,11 +111,28 @@ class BlogSeeder extends \CodeIgniter\Database\Seeder
             }
         }
 
+        //Association d'article et de categorie
+        $rowsCatArt = [
+            'id_article'   => 1,
+            'id_categorie' => 1,
+            'created_at'   => date('Y-m-d H:i:s')
+
+        ];
+
+        $rowsCatArtItem = $db->table('articles_categories')->where('id_article', $rowsCatArt['id_article'])->get()->getRow();
+        //print_r($article); exit;
+        if (empty($rowsCatArtItem)) {
+            // No setting - add the row
+            $db->table('articles_categories')->insert($rowsCatArt);
+        }
+
+
+        // gestionde l'application
         $rowsBlogTabs = [
             'id_parent'         => 17,
             'depth'             => 2,
             'left'              => 11,
-            'right'             => 18,
+            'right'             => 19,
             'position'          => 1,
             'section'           => 0,
             'module'            => 'Adnduweb\Ci4_blog',
@@ -211,6 +230,31 @@ class BlogSeeder extends \CodeIgniter\Database\Seeder
             ],
         ];
 
+        $rowsSettingsTabs = [
+            'depth'             => 3,
+            'left'              => 18,
+            'right'             => 19,
+            'position'          => 1,
+            'section'           => 0,
+            'module'            => 'Adnduweb\Ci4_blog',
+            'class_name'        => 'AdminBlogSettings',
+            'active'            =>  1,
+            'icon'              => '',
+            'slug'             => 'blog/settings',
+            'name_controller'       => ''
+        ];
+
+        $rowsSettingsTabsLangs = [
+            [
+                'id_lang'         => 1,
+                'name'             => 'réglages',
+            ],
+            [
+                'id_lang'         => 2,
+                'name'             => 'settings',
+            ],
+        ];
+
 
         $tabBlog = $db->table('tabs')->where('class_name', $rowsBlogTabs['class_name'])->get()->getRow();
         //print_r($tab); exit;
@@ -276,6 +320,23 @@ class BlogSeeder extends \CodeIgniter\Database\Seeder
                     $i++;
                 }
             }
+
+            // On Insére les Settings
+            $tabSettings = $db->table('tabs')->where('class_name', $rowsSettingsTabs['class_name'])->get()->getRow();
+            //print_r($tab); exit;
+            if (empty($tabSettings)) {
+                // No setting - add the row
+                $rowsSettingsTabs['id_parent']  = $newInsert;
+                $db->table('tabs')->insert($rowsSettingsTabs);
+                $newInsertTags = $db->insertID();
+                $i = 0;
+                foreach ($rowsSettingsTabsLangs as $rowLang) {
+                    $rowLang['tab_id']   = $newInsertTags;
+                    // No setting - add the row
+                    $db->table('tabs_langs')->insert($rowLang);
+                    $i++;
+                }
+            }
         }
 
 
@@ -283,7 +344,7 @@ class BlogSeeder extends \CodeIgniter\Database\Seeder
          *
          * Gestion des permissions
          */
-        $rowsPermissionsArticles = [
+        $rowsPermissionsBlog = [
             [
                 'name'              => 'Articles::views',
                 'description'       => 'Voir les articles',
@@ -303,11 +364,71 @@ class BlogSeeder extends \CodeIgniter\Database\Seeder
                 'name'              => 'Articles::delete',
                 'description'       => 'Supprimer des articles',
                 'is_natif'          => '0',
+            ],
+            [
+                'name'              => 'Categories::views',
+                'description'       => 'Voir les categories',
+                'is_natif'          => '0',
+            ],
+            [
+                'name'              => 'Categories::create',
+                'description'       => 'Créer des categories',
+                'is_natif'          => '0',
+            ],
+            [
+                'name'              => 'Categories::edit',
+                'description'       => 'Modifier les categories',
+                'is_natif'          => '0',
+            ],
+            [
+                'name'              => 'Categories::delete',
+                'description'       => 'Supprimer des categories',
+                'is_natif'          => '0',
+            ],
+            [
+                'name'              => 'Tags::views',
+                'description'       => 'Voir les tags',
+                'is_natif'          => '0',
+            ],
+            [
+                'name'              => 'Tags::create',
+                'description'       => 'Créer des tags',
+                'is_natif'          => '0',
+            ],
+            [
+                'name'              => 'Tags::edit',
+                'description'       => 'Modifier les tags',
+                'is_natif'          => '0',
+            ],
+            [
+                'name'              => 'Tags::delete',
+                'description'       => 'Supprimer des tags',
+                'is_natif'          => '0',
+            ],
+            [
+                'name'              => 'SettingsBlog::views',
+                'description'       => 'Voir les réglages',
+                'is_natif'          => '0',
+            ],
+            [
+                'name'              => 'SettingsBlog::create',
+                'description'       => 'Créer des réglages',
+                'is_natif'          => '0',
+            ],
+            [
+                'name'              => 'SettingsBlog::edit',
+                'description'       => 'Modifier les réglages',
+                'is_natif'          => '0',
+            ],
+            [
+                'name'              => 'SettingsBlog::delete',
+                'description'       => 'Supprimer des réglages',
+                'is_natif'          => '0',
             ]
         ];
 
         // On insére le role par default au user
-        foreach ($rowsPermissionsArticles as $row) {
+        foreach ($rowsPermissionsBlog as $row) {
             $tabRow =  $db->table('auth_permissions')->where(['name' => $row['name']])->get()->getRow();
             if (empty($tabRow)) {
                 // No langue - add the row

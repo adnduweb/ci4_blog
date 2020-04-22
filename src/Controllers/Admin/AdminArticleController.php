@@ -60,10 +60,12 @@ class AdminArticleController extends AdminController
     public function renderViewList()
     {
         AssetsBO::add_js([$this->get_current_theme_view('controllers/' . $this->controller . '/js/listBlog.js', 'default')]);
+        $this->data['gettype'] = $this->getType();
         $parent =  parent::renderViewList();
         if (is_object($parent) && $parent->getStatusCode() == 307) {
             return $parent;
         }
+        
         return $parent;
     }
 
@@ -104,41 +106,52 @@ class AdminArticleController extends AdminController
 
         $this->data['form']->gettype = $this->getType();
         $this->data['form']->categories =  $this->categories_model->getlist();
-        //print_r($this->data['form']->categories); exit;
+        $this->data['form']->getCatByArt = $this->tableModel->getCatByArt($id);
+//print_r($this->data['form']->getArticles_categories(service('Settings')->setting_id_lang)); exit;
+//print_r($this->data['form']); exit;
 
         parent::renderForm($id);
-        $this->data['edit_title'] =lang('Core.edit_article');
+        $this->data['edit_title'] = lang('Core.edit_article');
         return view($this->get_current_theme_view('form', 'Adnduweb/Ci4_blog'), $this->data);
     }
 
     public function postProcessEdit($param)
     {
-        // validate
-        $rules = [
-            'slug' => 'required',
-        ];
-        if (!$this->validate($rules)) {
-            Tools::set_message('danger', $this->validator->getErrors(), lang('Core.warning_error'));
+        $this->validation->setRules(['lang.1.slug' => 'required']);
+        if (!$this->validation->run($this->request->getPost())) {
+            Tools::set_message('danger', $this->validation->getErrors(), lang('Core.warning_error'));
             return redirect()->back()->withInput();
         }
 
         // Try to create the user
         $articleBase = new Article($this->request->getPost());
         $this->lang = $this->request->getPost('lang');
-        $articleBase->slug = "/" . strtolower(preg_replace('/[^a-zA-Z0-9\-]/', '', preg_replace('/\s+/', '-', $articleBase->slug)));
+        $articleBase->slug = strtolower(preg_replace('/[^a-zA-Z0-9\-]/', '', preg_replace('/\s+/', '-', $articleBase->slug)));
+        $articleBase->id_categorie = $articleBase->id_categorie_default;
+        $articleBase->id_categorie_default = $articleBase->id_categorie_default[0];
+        $articleBase->author_update = user()->id;
+        $articleBase->active = isset($articleBase->active) ? 1 : 0 ; 
 
         // Les images
         $articleBase->picture_one = $this->getImagesPrep($articleBase->getPictureOneAtt());
         $articleBase->picture_header = $this->getImagesPrep($articleBase->getPictureheaderAtt());
 
+        //print_r($articleBase); exit;
+
         if (!$this->tableModel->save($articleBase)) {
             Tools::set_message('danger', $this->tableModel->errors(), lang('Core.warning_error'));
             return redirect()->back()->withInput();
         }
+
+        // On enregistre les categories
+        $articleBase->saveCategorie($articleBase);
+
+        // On enregistre les langues
         $articleBase->saveLang($this->lang, $articleBase->id_article);
 
         // On enregistre le Builder si existe
         $this->saveBuilder($this->request->getPost('builder'));
+
 
         // Success!
         Tools::set_message('success', lang('Core.save_data'), lang('Core.cool_success'));
@@ -150,7 +163,56 @@ class AdminArticleController extends AdminController
         ];
         $this->redirectAfterForm($redirectAfterForm);
     }
-    public function getImagesPrep($imageJson){
+
+    public function postProcessAdd()
+    {
+
+        $this->validation->setRules(['lang.1.slug' => 'required']);
+        if (!$this->validation->run($this->request->getPost())) {
+            Tools::set_message('danger', $this->validation->getErrors(), lang('Core.warning_error'));
+            return redirect()->back()->withInput();
+        }
+
+        // Try to create the user
+        $articleBase = new Article($this->request->getPost());
+        $this->lang = $this->request->getPost('lang');
+        $articleBase->slug = strtolower(preg_replace('/[^a-zA-Z0-9\-]/', '', preg_replace('/\s+/', '-', $articleBase->slug)));
+        $articleBase->id_categorie = $articleBase->id_categorie_default;
+        $articleBase->id_categorie_default = $articleBase->id_categorie_default[0];
+        $articleBase->author_created = user()->id;
+        $articleBase->author_update = user()->id;
+
+        // Les images
+        $articleBase->picture_one = $this->getImagesPrep($articleBase->getPictureOneAtt());
+        $articleBase->picture_header = $this->getImagesPrep($articleBase->getPictureheaderAtt());
+
+        if (!$this->tableModel->save($articleBase)) {
+            Tools::set_message('danger', $this->tableModel->errors(), lang('Core.warning_error'));
+            return redirect()->back()->withInput();
+        }
+        $id_article = $this->tableModel->insertID();
+        $articleBase->id_article = $id_article;
+        
+        // On enregistre les categories
+        $articleBase->saveCategorie($articleBase);
+
+        // On enregistre les langues
+        $this->lang = $this->request->getPost('lang');
+        $articleBase->saveLang($this->lang, $id_article);
+
+        // Success!
+        Tools::set_message('success', lang('Core.save_data'), lang('Core.cool_success'));
+        $redirectAfterForm = [
+            'url'                   => '/' . env('CI_SITE_AREA') . '/' . user()->id_company . '/public/blog/articles',
+            'action'                => 'add',
+            'submithandler'         => $this->request->getPost('submithandler'),
+            'id'                    => $id_article,
+        ];
+        $this->redirectAfterForm($redirectAfterForm);
+    }
+
+    public function getImagesPrep($imageJson)
+    {
         $options  = [];
         if (!empty($imageJson) || !is_null($imageJson)) {
 
@@ -180,4 +242,63 @@ class AdminArticleController extends AdminController
         return $options;
     }
 
+    public function ajaxProcessUpdate()
+    {
+        if ($value = $this->request->getPost('value')) {
+            $data = [];
+            if (isset($value['selected']) && !empty($value['selected'])) {
+                foreach ($value['selected'] as $selected) {
+
+                    $data[] = [
+                        'id_article' => $selected,
+                        'active'     => $value['active'],
+                    ];
+                }
+            }
+
+            if ($this->tableModel->updateBatch($data, 'id_article')) {
+                return $this->respond(['status' => true, 'message' => lang('Js.your_seleted_records_statuses_have_been_updated')], 200);
+            } else {
+                return $this->respond(['status' => false, 'database' => true, 'display' => 'modal', 'message' => lang('Js.aucun_enregistrement_effectue')], 200);
+            }
+        }
+    }
+
+    public function ajaxProcessUpdateType()
+    {
+        if ($value = $this->request->getPost('value')) {
+            $data = [];
+            if (isset($value['selected']) && !empty($value['selected'])) {
+                foreach ($value['selected'] as $selected) {
+
+                    $data[] = [
+                        'id_article' => $selected,
+                        'type'       => $value['type'],
+                    ];
+                }
+            }
+
+            if ($this->tableModel->updateBatch($data, 'id_article')) {
+                return $this->respond(['status' => true, 'message' => lang('Js.your_seleted_records_statuses_have_been_updated')], 200);
+            } else {
+                return $this->respond(['status' => false, 'database' => true, 'display' => 'modal', 'message' => lang('Js.aucun_enregistrement_effectue')], 200);
+            }
+        }
+    }
+    
+
+    public function ajaxProcessDelete()
+    {
+        if ($value = $this->request->getPost('value')) {
+            $data = [];
+            if (isset($value['selected']) && !empty($value['selected'])) {
+                foreach ($value['selected'] as $selected) {
+                    $this->tableModel->delete(['id_article' => $selected]);
+                }
+                return $this->respond(['status' => true, 'type' => 'success', 'message' => lang('Js.your_selected_records_have_been_deleted')], 200);
+            }
+            
+        }
+        return $this->failUnauthorized(lang('Js.not_autorized'), 400);
+    }
 }

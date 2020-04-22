@@ -26,22 +26,18 @@ class ArticlesModel extends Model
 
     use \Tatter\Relations\Traits\ModelTrait;
     use \Adnduweb\Ci4_logs\Traits\AuditsTrait;
-    protected $afterInsert = ['auditInsert'];
-    protected $afterUpdate = ['auditUpdate'];
-    protected $afterDelete = ['auditDelete'];
-
-    protected $table = 'articles';
-    protected $tableLang = 'articles_langs';
-    protected $with = ['articles_langs'];
-    protected $without = [];
-    protected $primaryKey = 'id_article';
-    protected $returnType = Article::class;
-    protected $useSoftDeletes = true;
-    protected $allowedFields = ['id_categorie', 'author_created', 'author_created', 'active', 'important', 'picture_one', 'picture_header', 'no_follow_no_index', 'slug', 'order', 'type'];
-    protected $useTimestamps = true;
-    protected $validationRules = [
-        'slug'            => 'required'
-    ];
+    protected $afterInsert        = ['auditInsert'];
+    protected $afterUpdate        = ['auditUpdate'];
+    protected $afterDelete        = ['auditDelete'];
+    protected $table              = 'articles';
+    protected $tableLang          = 'articles_langs';
+    protected $with               = ['articles_langs'];
+    protected $without            = [];
+    protected $primaryKey         = 'id_article';
+    protected $returnType         = Article::class;
+    protected $useSoftDeletes     = true;
+    protected $allowedFields      = ['id_categorie_default', 'author_created', 'author_created', 'active', 'important', 'picture_one', 'picture_header', 'no_follow_no_index', 'order', 'type'];
+    protected $useTimestamps      = true;
     protected $validationMessages = [];
     protected $skipValidation     = false;
 
@@ -55,7 +51,11 @@ class ArticlesModel extends Model
     public function __construct(...$params)
     {
         parent::__construct();
-        $this->article_table = $this->db->table('articles');
+        $this->article_table     = $this->db->table('articles');
+        $this->articles_langs    = $this->db->table('articles_langs');
+        $this->article_categorie = $this->db->table('articles_categories');
+        $this->categories        = $this->db->table('categories');
+        $this->categories_langs  = $this->db->table('categories_langs');
     }
 
     public function getAllList(int $page, int $perpage, array $sort, array $query)
@@ -72,13 +72,20 @@ class ArticlesModel extends Model
             $this->article_table->limit($perpage, $page);
         }
 
-
         $this->article_table->orderBy($sort['field'] . ' ' . $sort['sort']);
+        $articlesResult = $this->article_table->get()->getResult();
 
-        $groupsRow = $this->article_table->get()->getResult();
+        // In va chercher les categories
+        if (!empty($articlesResult)) {
+            $i = 0;
+            foreach ($articlesResult as $article) {
+                $articlesResult[$i]->categories = $this->getCatByArt($article->id_article);
+                $i++;
+            }
+        }
 
         //echo $this->article_table->getCompiledSelect(); exit;
-        return $groupsRow;
+        return $articlesResult;
     }
 
     public function getAllCount(array $sort, array $query)
@@ -98,6 +105,31 @@ class ArticlesModel extends Model
         return $pages->getResult();
     }
 
+    public function getCatArt(int $id_article): array
+    {
+        $this->article_categorie->select();
+        $this->article_categorie->where('id_article', $id_article);
+        return $this->article_categorie->get()->getResult();
+    }
+
+    public function getCatByArt($id_article = null): array
+    {
+        $this->article_categorie->select();
+        //$this->article_categorie->join('categories_langs', 'articles_categories.id_categorie = categories_langs.id_categorie');
+        $this->article_categorie->where(['id_article' => $id_article]);
+        $article_categorie =  $this->article_categorie->get()->getResult();
+        $temp = [];
+        if (!empty($article_categorie)) {
+            $i = 0;
+            foreach ($article_categorie as $art) {
+                $temp[$art->id_categorie] = $art;
+                $temp[$art->id_categorie]->name = $this->categories_langs->where(['id_categorie' => $art->id_categorie, 'id_lang' => service('settings')->setting_id_lang])->get()->getRow()->name;
+                $i++;
+            }
+        }
+        return $temp;
+    }
+
     /**
      * @param string $column
      * @param string $data
@@ -115,7 +147,7 @@ class ArticlesModel extends Model
     /**
      * @return array|mixed
      */
-    public function lastFive():array
+    public function lastFive(): array
     {
         $this->article_table->select("*, DATE_FORMAT(`created_at`,'<strong>%d-%m-%Y</strong> &agrave; <strong>%H:%i:%s</strong>') AS `created_at`, DATE_FORMAT(`updated_at`,'<strong>%d-%m-%Y</strong> &agrave; <strong>%H:%i:%s</strong>') AS `updated_at`");
         $this->article_table->limit('5');
@@ -127,7 +159,7 @@ class ArticlesModel extends Model
     /**
      * @return int|void
      */
-    public function count_publied():int
+    public function count_publied(): int
     {
         $this->article_table->select('COUNT(id_article) as id_article');
         $this->article_table->where('published', 1);
@@ -138,7 +170,7 @@ class ArticlesModel extends Model
     /**
      * @return int|void
      */
-    public function count_attCorrect():int
+    public function count_attCorrect(): int
     {
         $this->article_table->select('COUNT(id_article) as id_article');
         $this->article_table->where('corriged', 0);
@@ -151,7 +183,7 @@ class ArticlesModel extends Model
     /**
      * @return int|void
      */
-    public function count_attPublished():int
+    public function count_attPublished(): int
     {
         $this->article_table->select('COUNT(id_article) as id_article');
         $this->article_table->where('corriged', 1);
@@ -163,7 +195,7 @@ class ArticlesModel extends Model
     /**
      * @return int|void
      */
-    public function count_brouillon():int
+    public function count_brouillon(): int
     {
         $this->article_table->select('COUNT(id_article) as id_article');
         $this->article_table->where('brouillon', 1);
@@ -182,7 +214,7 @@ class ArticlesModel extends Model
      *
      * @return int (Return id)
      */
-    public function Add(string $title, string $link, string $content, string $tags, string $categories, string $pic, int $important):int
+    public function Add(string $title, string $link, string $content, string $tags, string $categories, string $pic, int $important): int
     {
         $data = [
             'title'          => $title,

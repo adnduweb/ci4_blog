@@ -3,13 +3,15 @@
 namespace Adnduweb\Ci4_blog\Entities;
 
 use CodeIgniter\Entity;
+use Adnduweb\Ci4_blog\Models\CategoriesModel;
 
 class Article extends Entity
 {
     use \Tatter\Relations\Traits\EntityTrait;
-    protected $table      = 'articles';
-    protected $tableLang  = 'articles_langs';
-    protected $primaryKey = 'id_article';
+    protected $table        = 'articles';
+    protected $tableLang    = 'articles_langs';
+    protected $tablecArtCat = 'articles_categories';
+    protected $primaryKey   = 'id_article';
 
     protected $datamap = [];
     /**
@@ -53,6 +55,15 @@ class Article extends Entity
         }
     }
 
+    public function getDescriptionShort(int $id_lang)
+    {
+        foreach ($this->articles_langs as $lang) {
+            if ($id_lang == $lang->id_lang) {
+                return $lang->description_short ?? null;
+            }
+        }
+    }
+
     public function get_MetaDescription(int $id_lang)
     {
         foreach ($this->articles_langs as $lang) {
@@ -71,12 +82,53 @@ class Article extends Entity
         }
     }
 
+    public function getLink($slug = false, int $id_lang)
+    {
+        foreach ($this->articles_langs as $lang) {
+            if ($id_lang == $lang->id_lang) {
+                return base_urlFront($slug . '/' . $lang->slug);
+            }
+        }
+    }
+
     public function getPictureOneAtt()
     {
         if (!empty($this->attributes['picture_one'])) {
             return json_decode($this->attributes['picture_one']);
         }
         return null;
+    }
+
+    public function getImageOneAtt($id_lang, $format = false)
+    {
+        $image = null;
+
+        if (!empty($this->attributes['picture_one'])) {
+
+            $getAttrOptions = json_decode($this->attributes['picture_one']);;
+            if (empty($getAttrOptions))
+                return $image;
+
+            $mediasModel = new \App\Models\mediasModel();
+            $image = $mediasModel->getMediaById($getAttrOptions->media->id_media, $id_lang);
+            if (empty($image)) {
+                $image = $mediasModel->where('id_media', $getAttrOptions->media->id_media)->get()->getRow();
+            }
+            if (is_object($image)) {
+                if($format == true){
+                    $getAttrOptions->media->filename =  base_url() . '/uploads/'.$format.'/' . $image->namefile;
+                    list($width, $height, $type, $attr) =  getimagesize($getAttrOptions->media->filename);
+                    $getAttrOptions->media->dimensions = (object)['width' => $width, 'height' => $height];
+                    $getAttrOptions->media->format = $format;  
+                }
+                $image->class = 'adw_lazyload ';
+                $image->options = $getAttrOptions;
+            }
+        }
+
+        //var_dump($image);exit;
+
+        return $image;
     }
 
     public function getPictureheaderAtt()
@@ -86,104 +138,6 @@ class Article extends Entity
         }
         return null;
     }
-
-    public function getBuilder(string $id_field, int $id_lang)
-    {
-        foreach ($this->builders as $builder) {
-            if ($id_field == $builder->id_field) {
-                foreach ($builder->builders_langs as $lang) {
-                    if ($id_lang == $lang->id_lang) {
-                        $builder->id_lang = $lang->id_lang;
-                        $builder->content = $lang->content;
-                    }
-                }
-                unset($builder->builders_langs);
-                return $builder ?? null;
-            }
-            return false;
-        }
-    }
-
-    public function getBuilderContent(string $id_field, int $id_lang)
-    {
-        if (!empty($this->builders)) {
-            foreach ($this->builders as $builder) {
-                if ($id_field == $builder->id_field) {
-                    foreach ($builder->builders_langs as $lang) {
-                        if ($id_lang == $lang->id_lang) {
-                            return $lang->content ?? null;
-                        }
-                    }
-                }
-                return null;
-            }
-            return null;
-        }
-    }
-
-    public function getTextarea(string $handle, int $id_lang)
-    {
-        if (!empty($this->builders)) {
-            $i = 0;
-            foreach ($this->builders as $builder) {
-                if ($handle == $builder->handle && $builder->type == "textarea") {
-                    foreach ($builder->builders_langs as $lang) {
-                        if ($id_lang == $lang->id_lang) {
-                            return $lang->content ?? null;
-                        }
-                    }
-                }
-                $i++;
-            }
-            return null;
-        }
-    }
-    public function getTitle(string $handle, int $id_lang)
-    {
-        if (!empty($this->builders)) {
-            $i = 0;
-            foreach ($this->builders as $builder) {
-                if ($handle == $builder->handle && $builder->type == "textfield") {
-                    foreach ($builder->builders_langs as $lang) {
-                        if ($id_lang == $lang->id_lang) {
-                            return $lang->content ?? null;
-                        }
-                    }
-                }
-                $i++;
-            }
-            return null;
-        }
-    }
-
-    public function getImage(string $handle, int $id_lang)
-    {
-        $image = null;
-        if (!empty($this->builders)) {
-            $i = 0;
-
-            foreach ($this->builders as $builder) {
-                if ($handle == $builder->handle && $builder->type == "imagefield") {
-
-                    $getAttrOptions = $getAttrOptions = $builder->getAttrOptions();
-                    if (empty($getAttrOptions))
-                        return $image;
-
-                    $mediasModel = new \App\Models\mediasModel();
-                    $image = $mediasModel->getMediaById($getAttrOptions->media->id_media, $id_lang);
-                    if (empty($image)) {
-                        $image = $mediasModel->where('id_media', $getAttrOptions->media->id_media)->get()->getRow();
-                    }
-                    if (is_object($image))
-                        $image->options = $getAttrOptions;
-                }
-                $i++;
-            }
-        }
-
-        return $image;
-    }
-
 
     public function getNameAllLang()
     {
@@ -224,6 +178,8 @@ class Article extends Entity
                     'description'       => $v['description'],
                     'meta_title'        => $v['meta_title'],
                     'meta_description'  => $v['meta_description'],
+                    'tags'              => isset($v['tags']) ? $v['tags'] : '',
+                    'slug'              => uniforme(trim($v['slug'])),
                 ];
                 // Create the new participant
                 $builder->insert($data);
@@ -236,11 +192,35 @@ class Article extends Entity
                     'description'       => $v['description'],
                     'meta_title'        => $v['meta_title'],
                     'meta_description'  => $v['meta_description'],
+                    'tags'              => isset($v['tags']) ? $v['tags'] : '',
+                    'slug'              => uniforme(trim($v['slug'])),
                 ];
                 print_r($data);
                 $builder->set($data);
                 $builder->where(['id_article' => $this->tableLang->id_article, 'id_lang' => $this->tableLang->id_lang]);
                 $builder->update();
+            }
+        }
+    }
+
+    public function saveCategorie($data)
+    {
+        $db         = \Config\Database::connect();
+        $builder    = $db->table($this->tablecArtCat);
+        $id_article = $data->id_article;
+
+        $builder->delete(['id_article' => $id_article]);
+
+        foreach ($data->id_categorie as $k => $v) {
+
+            $this->tablecArtCat =  $builder->where(['id_categorie' => $v, 'id_article' => $id_article])->get()->getRow();
+            if (empty($this->tablecArtCat)) {
+                $data = [
+                    'id_article'   =>  $id_article,
+                    'id_categorie' => $v,
+                    'created_at' => date('Y-m-d H:i:s'),
+                ];
+                $builder->insert($data);
             }
         }
     }

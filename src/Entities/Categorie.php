@@ -89,18 +89,14 @@ class Categorie extends Entity
         $builder = $db->table($this->tableLang);
         foreach ($data as $k => $v) {
             $this->tableLang =  $builder->where(['id_lang' => $k, 'id_categorie' => $key])->get()->getRow();
-            // print_r($this->tableLang);
             if (empty($this->tableLang)) {
                 $data = [
                     'id_categorie'      => $key,
                     'id_lang'           => $k,
                     'name'              => $v['name'],
                     'description_short' => $v['description_short'],
-                    'description'       => $v['description'],
-                    'meta_title'        => $v['meta_title'],
-                    'meta_description'  => $v['meta_description'],
+                    'slug' => strtolower(preg_replace('/[^a-zA-Z0-9\-]/', '', preg_replace('/\s+/', '-', trim($v['slug']))))
                 ];
-                // Create the new participant
                 $builder->insert($data);
             } else {
                 $data = [
@@ -108,11 +104,8 @@ class Categorie extends Entity
                     'id_lang'      => $this->tableLang->id_lang,
                     'name'              => $v['name'],
                     'description_short' => $v['description_short'],
-                    'description'       => $v['description'],
-                    'meta_title'        => $v['meta_title'],
-                    'meta_description'  => $v['meta_description'],
+                    'slug' => strtolower(preg_replace('/[^a-zA-Z0-9\-]/', '', preg_replace('/\s+/', '-', trim($v['slug']))))
                 ];
-                print_r($data);
                 $builder->set($data);
                 $builder->where(['id_categorie' => $this->tableLang->id_categorie, 'id_lang' => $this->tableLang->id_lang]);
                 $builder->update();
