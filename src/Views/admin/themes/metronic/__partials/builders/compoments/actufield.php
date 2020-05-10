@@ -1,7 +1,7 @@
 <?php $categoriesModel = new Adnduweb\Ci4_blog\Models\CategoriesModel(); ?>
 <?php $field = isset($builder->id_field) ? $builder->id_field : "__field__"; ?>
 <?php $optionsActus = isset($builder->id_field) ? json_decode($builder->options) : ""; ?>
-<div class="kt-portlet kt-portlet--solid-grey kt-portlet--height-fluid <?= ($field == '__field__') ? '' : ' kt-portlet--collapse'; ?>" data-ktportlet="true" id="kt_portlet_tools<?= $field; ?>">
+<div class="kt-portlet kt-portlet--height-fluid <?= ($field == '__field__') ? '' : ' kt-portlet--collapse'; ?>" id="kt_portlet_tools<?= $field; ?>">
     <div class="kt-portlet__head">
         <div class="kt-portlet__head-label">
             <h3 class="kt-portlet__head-title">
@@ -11,7 +11,7 @@
         <div class="kt-portlet__head-toolbar">
             <div class="kt-portlet__head-group">
                 <a href="javascript:;" data-ktportlet-tool="toggle" data-field="<?= $field; ?>" class="btn btn-sm btn-icon btn-brand btn-icon-md"><i class="la la-angle-down"></i></a>
-                <a href="javascript:;" data-ktportlet-tool="remove" data-id_builder="<?= isset($builder->id_builder) ? $builder->id_builder : ""; ?>" data-field="<?= $field; ?>" class="btn btn-sm btn-icon btn-danger removePortlet btn-icon-md"><i class="la la-close"></i></a>
+                <a href="javascript:;" data-ktportlet-tool="remove" data-id_builder="<?= isset($builder->id_builder) ? $builder->id_builder : ""; ?>" data-field="<?= $field; ?>" class="btn btn-sm btn-icon btn-warning removePortlet btn-icon-md"><i class="la la-close"></i></a>
             </div>
         </div>
     </div>
@@ -22,7 +22,7 @@
                 <div class="col-md-12">
                     <div class="form-group">
                         <label><?= lang('Core.titre'); ?></label>
-                        <?= form_input_spread([$field, 'content'], isset($builder->id_field) ? $builder->_prepareLang() : NULL, 'id="name" class="form-control lang"', 'text', false, true); ?>
+                        <?= form_input_spread([$field, 'content'], isset($builder->id_field) ? $builder->_prepareLang() : NULL, 'id="name" class="form-control lang"', 'text', false, 'builder'); ?>
                     </div>
                 </div>
 

@@ -63,8 +63,8 @@ class ArticlesModel extends Model
         $this->article_table->select();
         $this->article_table->select('created_at as date_create_at');
         $this->article_table->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.id_article');
-        if (isset($query['generalSearch']) && !empty($query['generalSearch'])) {
-            $this->article_table->where('deleted_at IS NULL AND (name LIKE "%' . $query['generalSearch'] . '%" OR login_destination LIKE "%' . $query['generalSearch'] . '%") AND id_lang = ' . service('settings')->setting_id_lang);
+         if (isset($query[0]) && is_array($query)) {
+            $this->article_table->where('deleted_at IS NULL AND (name LIKE "%' . $query[0] . '%" OR description_short LIKE "%' . $query[0] . '%") AND id_lang = ' . service('settings')->setting_id_lang);
             $this->article_table->limit(0, $page);
         } else {
             $this->article_table->where('deleted_at IS NULL AND id_lang = ' . service('settings')->setting_id_lang);
@@ -92,8 +92,8 @@ class ArticlesModel extends Model
     {
         $this->article_table->select($this->table . '.' . $this->primaryKey);
         $this->article_table->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.id_article');
-        if (isset($query['generalSearch']) && !empty($query['generalSearch'])) {
-            $this->article_table->where('deleted_at IS NULL AND (name LIKE "%' . $query['generalSearch'] . '%" OR login_destination LIKE "%' . $query['generalSearch'] . '%") AND id_lang = ' . service('settings')->setting_id_lang);
+         if (isset($query[0]) && is_array($query)) {
+            $this->article_table->where('deleted_at IS NULL AND (name LIKE "%' . $query[0] . '%" OR description_short LIKE "%' . $query[0] . '%") AND id_lang = ' . service('settings')->setting_id_lang);
         } else {
             $this->article_table->where('deleted_at IS NULL AND id_lang = ' . service('settings')->setting_id_lang);
         }

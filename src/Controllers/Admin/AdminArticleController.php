@@ -81,6 +81,11 @@ class AdminArticleController extends AdminController
         AssetsBO::add_js([$this->get_current_theme_view('plugins/custom/ckeditor/ckeditor-classic.bundle.js', 'default')]);
         AssetsBO::add_js([$this->get_current_theme_view('controllers/medias/js/manager.js', 'default')]);
         AssetsBO::add_js([$this->get_current_theme_view('js/builder.js', 'default')]);
+        if (class_exists('\Adnduweb\Ci4_blog\Controllers\Admin\AdminArticleController'))
+            AssetsBO::add_js([$this->get_current_theme_view('controllers/blog/js/builder.js', 'default')]);
+        if (class_exists('\Adnduweb\Ci4_diaporama\Controllers\Admin\AdminDiaporamasController'))
+            AssetsBO::add_js([$this->get_current_theme_view('controllers/diaporamas/js/builder.js', 'default')]);
+
         if (is_null($id)) {
             $this->data['form'] = new Article($this->request->getPost());
         } else {

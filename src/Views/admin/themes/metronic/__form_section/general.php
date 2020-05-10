@@ -108,7 +108,7 @@
     <div class="col-lg-12 col-xl-12">
         <div>
             <?php $optionsPicture_one = [
-                'acceptedFiles' => '.jpg, .jpeg, .png',
+                'acceptedFiles' => '.jpg, .jpeg, .png, .svg',
                 'maxFiles' => 1,
                 'maxFilesize' => 5,
                 'uploadMultiple' => false,
@@ -118,6 +118,7 @@
                 'type' => 'image',
                 'field' => 'picture_one',
                 'builder' => false,
+                'input' => false,
                 'only' => 1
             ]; ?>
             <?= view('/admin/themes/metronic/controllers/medias/bundleUploadCrop', $optionsPicture_one) ?>
@@ -150,7 +151,7 @@
     <div class="col-lg-12 col-xl-12">
         <div>
             <?php $optionsPicture_header = [
-                'acceptedFiles' => '.jpg, .jpeg, .png',
+                'acceptedFiles' => '.jpg, .jpeg, .png, .svg',
                 'maxFiles' => 1,
                 'maxFilesize' => 5,
                 'uploadMultiple' => false,
@@ -160,6 +161,7 @@
                 'type' => 'image',
                 'field' => 'picture_header',
                 'builder' => false,
+                'input' => false,
                 'only' => 1
             ]; ?>
             <?= view('/admin/themes/metronic/controllers/medias/bundleUploadCrop', $optionsPicture_header) ?>

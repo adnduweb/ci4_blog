@@ -205,55 +205,55 @@ class BlogSeeder extends \CodeIgniter\Database\Seeder
             ],
         ];
 
-        $rowsTagsTabs = [
-            'depth'             => 3,
-            'left'              => 16,
-            'right'             => 17,
-            'position'          => 1,
-            'section'           => 0,
-            'module'            => 'Adnduweb\Ci4_blog',
-            'class_name'        => 'AdminTags',
-            'active'            =>  1,
-            'icon'              => '',
-            'slug'             => 'blog/tags',
-            'name_controller'       => ''
-        ];
+        // $rowsTagsTabs = [
+        //     'depth'             => 3,
+        //     'left'              => 16,
+        //     'right'             => 17,
+        //     'position'          => 1,
+        //     'section'           => 0,
+        //     'module'            => 'Adnduweb\Ci4_blog',
+        //     'class_name'        => 'AdminTags',
+        //     'active'            =>  1,
+        //     'icon'              => '',
+        //     'slug'             => 'blog/tags',
+        //     'name_controller'       => ''
+        // ];
 
-        $rowsTagsTabsLangs = [
-            [
-                'id_lang'         => 1,
-                'name'             => 'tags',
-            ],
-            [
-                'id_lang'         => 2,
-                'name'             => 'tags',
-            ],
-        ];
+        // $rowsTagsTabsLangs = [
+        //     [
+        //         'id_lang'         => 1,
+        //         'name'             => 'tags',
+        //     ],
+        //     [
+        //         'id_lang'         => 2,
+        //         'name'             => 'tags',
+        //     ],
+        // ];
 
-        $rowsSettingsTabs = [
-            'depth'             => 3,
-            'left'              => 18,
-            'right'             => 19,
-            'position'          => 1,
-            'section'           => 0,
-            'module'            => 'Adnduweb\Ci4_blog',
-            'class_name'        => 'AdminBlogSettings',
-            'active'            =>  1,
-            'icon'              => '',
-            'slug'             => 'blog/settings',
-            'name_controller'       => ''
-        ];
+        // $rowsSettingsTabs = [
+        //     'depth'             => 3,
+        //     'left'              => 18,
+        //     'right'             => 19,
+        //     'position'          => 1,
+        //     'section'           => 0,
+        //     'module'            => 'Adnduweb\Ci4_blog',
+        //     'class_name'        => 'AdminBlogSettings',
+        //     'active'            =>  1,
+        //     'icon'              => '',
+        //     'slug'             => 'blog/settings',
+        //     'name_controller'       => ''
+        // ];
 
-        $rowsSettingsTabsLangs = [
-            [
-                'id_lang'         => 1,
-                'name'             => 'réglages',
-            ],
-            [
-                'id_lang'         => 2,
-                'name'             => 'settings',
-            ],
-        ];
+        // $rowsSettingsTabsLangs = [
+        //     [
+        //         'id_lang'         => 1,
+        //         'name'             => 'réglages',
+        //     ],
+        //     [
+        //         'id_lang'         => 2,
+        //         'name'             => 'settings',
+        //     ],
+        // ];
 
 
         $tabBlog = $db->table('tabs')->where('class_name', $rowsBlogTabs['class_name'])->get()->getRow();
@@ -304,39 +304,39 @@ class BlogSeeder extends \CodeIgniter\Database\Seeder
                 }
             }
 
-            // On Insére les Tags
-            $tabTag = $db->table('tabs')->where('class_name', $rowsTagsTabs['class_name'])->get()->getRow();
-            //print_r($tab); exit;
-            if (empty($tabTag)) {
-                // No setting - add the row
-                $rowsTagsTabs['id_parent']  = $newInsert;
-                $db->table('tabs')->insert($rowsTagsTabs);
-                $newInsertTags = $db->insertID();
-                $i = 0;
-                foreach ($rowsTagsTabsLangs as $rowLang) {
-                    $rowLang['tab_id']   = $newInsertTags;
-                    // No setting - add the row
-                    $db->table('tabs_langs')->insert($rowLang);
-                    $i++;
-                }
-            }
+            // // On Insére les Tags
+            // $tabTag = $db->table('tabs')->where('class_name', $rowsTagsTabs['class_name'])->get()->getRow();
+            // //print_r($tab); exit;
+            // if (empty($tabTag)) {
+            //     // No setting - add the row
+            //     $rowsTagsTabs['id_parent']  = $newInsert;
+            //     $db->table('tabs')->insert($rowsTagsTabs);
+            //     $newInsertTags = $db->insertID();
+            //     $i = 0;
+            //     foreach ($rowsTagsTabsLangs as $rowLang) {
+            //         $rowLang['tab_id']   = $newInsertTags;
+            //         // No setting - add the row
+            //         $db->table('tabs_langs')->insert($rowLang);
+            //         $i++;
+            //     }
+            // }
 
-            // On Insére les Settings
-            $tabSettings = $db->table('tabs')->where('class_name', $rowsSettingsTabs['class_name'])->get()->getRow();
-            //print_r($tab); exit;
-            if (empty($tabSettings)) {
-                // No setting - add the row
-                $rowsSettingsTabs['id_parent']  = $newInsert;
-                $db->table('tabs')->insert($rowsSettingsTabs);
-                $newInsertTags = $db->insertID();
-                $i = 0;
-                foreach ($rowsSettingsTabsLangs as $rowLang) {
-                    $rowLang['tab_id']   = $newInsertTags;
-                    // No setting - add the row
-                    $db->table('tabs_langs')->insert($rowLang);
-                    $i++;
-                }
-            }
+            // // On Insére les Settings
+            // $tabSettings = $db->table('tabs')->where('class_name', $rowsSettingsTabs['class_name'])->get()->getRow();
+            // //print_r($tab); exit;
+            // if (empty($tabSettings)) {
+            //     // No setting - add the row
+            //     $rowsSettingsTabs['id_parent']  = $newInsert;
+            //     $db->table('tabs')->insert($rowsSettingsTabs);
+            //     $newInsertTags = $db->insertID();
+            //     $i = 0;
+            //     foreach ($rowsSettingsTabsLangs as $rowLang) {
+            //         $rowLang['tab_id']   = $newInsertTags;
+            //         // No setting - add the row
+            //         $db->table('tabs_langs')->insert($rowLang);
+            //         $i++;
+            //     }
+            // }
         }
 
 
@@ -385,46 +385,46 @@ class BlogSeeder extends \CodeIgniter\Database\Seeder
                 'description'       => 'Supprimer des categories',
                 'is_natif'          => '0',
             ],
-            [
-                'name'              => 'Tags::views',
-                'description'       => 'Voir les tags',
-                'is_natif'          => '0',
-            ],
-            [
-                'name'              => 'Tags::create',
-                'description'       => 'Créer des tags',
-                'is_natif'          => '0',
-            ],
-            [
-                'name'              => 'Tags::edit',
-                'description'       => 'Modifier les tags',
-                'is_natif'          => '0',
-            ],
-            [
-                'name'              => 'Tags::delete',
-                'description'       => 'Supprimer des tags',
-                'is_natif'          => '0',
-            ],
-            [
-                'name'              => 'SettingsBlog::views',
-                'description'       => 'Voir les réglages',
-                'is_natif'          => '0',
-            ],
-            [
-                'name'              => 'SettingsBlog::create',
-                'description'       => 'Créer des réglages',
-                'is_natif'          => '0',
-            ],
-            [
-                'name'              => 'SettingsBlog::edit',
-                'description'       => 'Modifier les réglages',
-                'is_natif'          => '0',
-            ],
-            [
-                'name'              => 'SettingsBlog::delete',
-                'description'       => 'Supprimer des réglages',
-                'is_natif'          => '0',
-            ]
+            // [
+            //     'name'              => 'Tags::views',
+            //     'description'       => 'Voir les tags',
+            //     'is_natif'          => '0',
+            // ],
+            // [
+            //     'name'              => 'Tags::create',
+            //     'description'       => 'Créer des tags',
+            //     'is_natif'          => '0',
+            // ],
+            // [
+            //     'name'              => 'Tags::edit',
+            //     'description'       => 'Modifier les tags',
+            //     'is_natif'          => '0',
+            // ],
+            // [
+            //     'name'              => 'Tags::delete',
+            //     'description'       => 'Supprimer des tags',
+            //     'is_natif'          => '0',
+            // ],
+            // [
+            //     'name'              => 'SettingsBlog::views',
+            //     'description'       => 'Voir les réglages',
+            //     'is_natif'          => '0',
+            // ],
+            // [
+            //     'name'              => 'SettingsBlog::create',
+            //     'description'       => 'Créer des réglages',
+            //     'is_natif'          => '0',
+            // ],
+            // [
+            //     'name'              => 'SettingsBlog::edit',
+            //     'description'       => 'Modifier les réglages',
+            //     'is_natif'          => '0',
+            // ],
+            // [
+            //     'name'              => 'SettingsBlog::delete',
+            //     'description'       => 'Supprimer des réglages',
+            //     'is_natif'          => '0',
+            // ]
         ];
 
         // On insére le role par default au user

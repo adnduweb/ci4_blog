@@ -1,6 +1,6 @@
 <?php
 
-namespace Adnduweb\ci4_page\Database\Migrations;
+namespace Adnduweb\ci4_blog\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 

@@ -64,8 +64,8 @@ class CategoriesModel extends Model
         $this->categories->select();
         $this->categories->select('created_at as date_create_at');
         $this->categories->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.id_categorie');
-        if (isset($query['generalSearch']) && !empty($query['generalSearch'])) {
-            $this->categories->where('deleted_at IS NULL AND (name LIKE "%' . $query['generalSearch'] . '%" OR login_destination LIKE "%' . $query['generalSearch'] . '%") AND id_lang = ' . service('settings')->setting_id_lang);
+         if (isset($query[0]) && is_array($query)) {
+            $this->categories->where('deleted_at IS NULL AND (name LIKE "%' . $query[0] . '%" OR description_short LIKE "%' . $query[0] . '%") AND id_lang = ' . service('settings')->setting_id_lang);
             $this->categories->limit(0, $page);
         } else {
             $this->categories->where('deleted_at IS NULL AND id_lang = ' . service('settings')->setting_id_lang);
@@ -86,8 +86,8 @@ class CategoriesModel extends Model
     {
         $this->categories->select($this->table . '.' . $this->primaryKey);
         $this->categories->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.id_categorie');
-        if (isset($query['generalSearch']) && !empty($query['generalSearch'])) {
-            $this->categories->where('deleted_at IS NULL AND (name LIKE "%' . $query['generalSearch'] . '%" OR login_destination LIKE "%' . $query['generalSearch'] . '%") AND id_lang = ' . service('settings')->setting_id_lang);
+         if (isset($query[0]) && is_array($query)) {
+            $this->categories->where('deleted_at IS NULL AND (name LIKE "%' . $query[0] . '%" OR description_short LIKE "%' . $query[0] . '%") AND id_lang = ' . service('settings')->setting_id_lang);
         } else {
             $this->categories->where('deleted_at IS NULL AND id_lang = ' . service('settings')->setting_id_lang);
         }
@@ -206,8 +206,11 @@ class CategoriesModel extends Model
         }
     }
 
+
     public function getAllCat(){
-        $this->categories_langs->select('id_categorie, name');
-        return $this->categories_langs->get()->getResult();
+        $this->categories->select($this->table . '.' . $this->primaryKey . ', name');
+        $this->categories->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.id_categorie');
+        $this->categories->where('deleted_at IS NULL AND id_lang = ' . service('settings')->setting_id_lang);
+        return $this->categories->get()->getResult();
     }
 }

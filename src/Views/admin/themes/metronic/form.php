@@ -58,7 +58,7 @@
 							<div class="kt-form__body">
 								<div class="kt-section kt-section--first">
 									<div class="kt-section__body">
-										<?= $this->include('/admin/themes/metronic/__partials/builders/builder') ?>
+										<?= View('/admin/themes/metronic/__partials/builders/builder', ['compoment_authorized' => ['textfield']]) ?>
 									</div>
 								</div>
 							</div>
@@ -106,12 +106,12 @@
 
 
 <?php if (isset($form->builders) && !empty($form->builders)) { ?>
-	<?php foreach ($form->builders as $builder) { ?>
-		<?php if ($builder->type == "textField" || $builder->type == "textarea") {
+	<?php $b = 1; foreach ($form->builders as $builder) { ?>
+		<?php if ($builder->type == "textfield" || $builder->type == "textareafield") {
 			$field = isset($builder->id_field) ? $builder->id_field : "__field__"; ?>
 			<script>
 				jQuery(document).ready(function() {
-					var portlet<?= $field; ?> = new KTPortlet("kt_portlet_tools<?= $field; ?>");
+					var portlet<?= $field; ?> = new KTPortlet("kt_portlet_tools<?= $field; ?>", optionsPortlet);
 					<?php
 					$i = 1;
 					foreach ($supportedLocales as $k => $v) { ?>
@@ -131,7 +131,15 @@
 				});
 			</script>
 		<?php } ?>
-	<?php } ?>
+		<?php if ($builder->type == "imagefield" ) {
+			$field = isset($builder->id_field) ? $builder->id_field : "__field__"; ?>
+			<script>
+				jQuery(document).ready(function() {
+					var portlet<?= $field; ?> = new KTPortlet("kt_portlet_tools<?= $field; ?>", optionsPortlet);
+				});
+			</script>
+		<?php } ?>
+	<?php $b++; } ?>
 <?php } ?>
 
 <?= $this->endSection() ?>
