@@ -63,7 +63,7 @@ class ArticlesModel extends Model
         $this->article_table->select();
         $this->article_table->select('created_at as date_create_at');
         $this->article_table->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.id_article');
-         if (isset($query[0]) && is_array($query)) {
+        if (isset($query[0]) && is_array($query)) {
             $this->article_table->where('deleted_at IS NULL AND (name LIKE "%' . $query[0] . '%" OR description_short LIKE "%' . $query[0] . '%") AND id_lang = ' . service('settings')->setting_id_lang);
             $this->article_table->limit(0, $page);
         } else {
@@ -92,7 +92,7 @@ class ArticlesModel extends Model
     {
         $this->article_table->select($this->table . '.' . $this->primaryKey);
         $this->article_table->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.id_article');
-         if (isset($query[0]) && is_array($query)) {
+        if (isset($query[0]) && is_array($query)) {
             $this->article_table->where('deleted_at IS NULL AND (name LIKE "%' . $query[0] . '%" OR description_short LIKE "%' . $query[0] . '%") AND id_lang = ' . service('settings')->setting_id_lang);
         } else {
             $this->article_table->where('deleted_at IS NULL AND id_lang = ' . service('settings')->setting_id_lang);
@@ -129,6 +129,22 @@ class ArticlesModel extends Model
         }
         return $temp;
     }
+
+    public function getIdArticleBySlug($slug)
+    {
+        $this->article_table->select($this->table . '.' . $this->primaryKey . ', active');
+        $this->article_table->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.id_article');
+        $this->article_table->where('deleted_at IS NULL AND ' . $this->tableLang . '.slug="' . $slug . '"');
+        $article_table = $this->article_table->get()->getRow();
+        // echo $this->article_table->getCompiledSelect();
+        // exit;
+        if (!empty($article_table)) {
+            if ($article_table->active == '1')
+                return $article_table;
+        }
+        return false;
+    }
+
 
     /**
      * @param string $column

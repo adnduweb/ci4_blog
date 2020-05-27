@@ -1,6 +1,7 @@
 <?php $categoriesModel = new Adnduweb\Ci4_blog\Models\CategoriesModel(); ?>
 <?php $field = isset($builder->id_field) ? $builder->id_field : "__field__"; ?>
 <?php $optionsActus = isset($builder->id_field) ? json_decode($builder->options) : ""; ?>
+<?php $settingsActus = isset($builder->id_field) ? json_decode($builder->settings) : ""; ?>
 <div class="kt-portlet kt-portlet--height-fluid <?= ($field == '__field__') ? '' : ' kt-portlet--collapse'; ?>" id="kt_portlet_tools<?= $field; ?>">
     <div class="kt-portlet__head">
         <div class="kt-portlet__head-label">
@@ -34,7 +35,7 @@
                             <?php foreach ($categoriesModel->getAllCat() as $cat) { ?>
                                 <option <?= (isset($optionsActus->cat) && $optionsActus->cat == $cat->id_categorie) ? 'selected' : ""; ?> value="<?= $cat->id_categorie; ?>"><?= $cat->name; ?></option>
                             <?php } ?>
-                            
+
                         </select>
                     </div>
                 </div>
@@ -72,6 +73,29 @@
                     <div class="form-group">
                         <label><?= lang('Core.handle'); ?></label>
                         <input type="text" name="builder[<?= $field; ?>][handle]" data-field="<?= $field; ?>" class="form-control form_input_placeholder" value="<?= isset($builder->handle) ? $builder->handle : ""; ?>" placeholder="Handle" />
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label><?= ucfirst(lang('Core.row_start')); ?></label>
+                        <div class="kt-switch kt-switch--icon" style="display:block">
+                            <label>
+                                <input type="checkbox" <?= (isset($settingsActus->row_start) && $settingsActus->row_start == true) ? 'checked="checked"' : ''; ?> name="builder[<?= $field; ?>][settings][row_start]" value="1">
+                                <span></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label><?= ucfirst(lang('Core.row_end')); ?></label>
+                        <div class="kt-switch kt-switch--icon" style="display:block">
+                            <label>
+                                <input type="checkbox" <?= (isset($settingsActus->row_end) && $settingsActus->row_end == true) ? 'checked="checked"' : ''; ?> name="builder[<?= $field; ?>][settings][row_end]" value="1">
+                                <span></span>
+                            </label>
+                        </div>
                     </div>
                 </div>
                 <?php if ($field != "__field__") { ?>

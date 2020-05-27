@@ -65,7 +65,7 @@ class AdminArticleController extends AdminController
         if (is_object($parent) && $parent->getStatusCode() == 307) {
             return $parent;
         }
-        
+
         return $parent;
     }
 
@@ -112,8 +112,8 @@ class AdminArticleController extends AdminController
         $this->data['form']->gettype = $this->getType();
         $this->data['form']->categories =  $this->categories_model->getlist();
         $this->data['form']->getCatByArt = $this->tableModel->getCatByArt($id);
-//print_r($this->data['form']->getArticles_categories(service('Settings')->setting_id_lang)); exit;
-//print_r($this->data['form']); exit;
+        //print_r($this->data['form']->getArticles_categories(service('Settings')->setting_id_lang)); exit;
+        //print_r($this->data['form']); exit;
 
         parent::renderForm($id);
         $this->data['edit_title'] = lang('Core.edit_article');
@@ -135,7 +135,7 @@ class AdminArticleController extends AdminController
         $articleBase->id_categorie = $articleBase->id_categorie_default;
         $articleBase->id_categorie_default = $articleBase->id_categorie_default[0];
         $articleBase->author_update = user()->id;
-        $articleBase->active = isset($articleBase->active) ? 1 : 0 ; 
+        $articleBase->active = isset($articleBase->active) ? 1 : 0;
 
         // Les images
         $articleBase->picture_one = $this->getImagesPrep($articleBase->getPictureOneAtt());
@@ -197,7 +197,7 @@ class AdminArticleController extends AdminController
         }
         $id_article = $this->tableModel->insertID();
         $articleBase->id_article = $id_article;
-        
+
         // On enregistre les categories
         $articleBase->saveCategorie($articleBase);
 
@@ -290,7 +290,7 @@ class AdminArticleController extends AdminController
             }
         }
     }
-    
+
 
     public function ajaxProcessDelete()
     {
@@ -302,7 +302,6 @@ class AdminArticleController extends AdminController
                 }
                 return $this->respond(['status' => true, 'type' => 'success', 'message' => lang('Js.your_selected_records_have_been_deleted')], 200);
             }
-            
         }
         return $this->failUnauthorized(lang('Js.not_autorized'), 400);
     }

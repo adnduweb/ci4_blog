@@ -41,6 +41,7 @@ class Migration_create_table_blog extends Migration
             'id_article'        => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'default' => 0],
             'id_lang'           => ['type' => 'INT', 'constraint' => 11],
             'name'              => ['type' => 'VARCHAR', 'constraint' => 255],
+            'sous_name'         => ['type' => 'VARCHAR', 'constraint' => 255],
             'description_short' => ['type' => 'TEXT'],
             'description'       => ['type' => 'TEXT'],
             'meta_title'        => ['type' => 'VARCHAR', 'constraint' => 255],

@@ -36,6 +36,7 @@ class BlogSeeder extends \CodeIgniter\Database\Seeder
                 'id_article'        => 1,
                 'id_lang'           => 1,
                 'name'              => 'Bonjour',
+                'sous_name'         => 'Bonjour',
                 'description_short' => $lipsum->sentence(),
                 'description'       => $lipsum->paragraphs(5),
                 'meta_title'        => $lipsum->sentence(),

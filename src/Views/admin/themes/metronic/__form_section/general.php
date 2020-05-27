@@ -17,7 +17,7 @@
     </div>
 </div> -->
 
-<?php if (!empty($form->active)) { ?> <?= form_hidden('active', 1); ?> <?php } ?> 
+<?php if (!empty($form->active)) { ?> <?= form_hidden('active', 1); ?> <?php } ?>
 
 
 <div class="form-group form-group-sm row">
@@ -36,8 +36,8 @@
     <div class="col-lg-9 col-xl-6">
         <select required name="id_categorie_default[]" class="form-control selectpicker file kt-selectpicker" publied-actions-box="true" title="<?= ucfirst(lang('Core.choose_one_of_the_following')); ?>" id="id_categorie_default">
             <?php foreach ($form->categories as $categorie) { ?>
-                <?php if (!empty($form->getCatByArt)) {?>
-                    <option  <?= isset($form->getCatByArt[$categorie->id_categorie]) ? 'selected' : ''; ?> value="<?= $categorie->id_categorie; ?>"><?= $categorie->getNameLang(service('Settings')->setting_id_lang); ?></option>
+                <?php if (!empty($form->getCatByArt)) { ?>
+                    <option <?= isset($form->getCatByArt[$categorie->id_categorie]) ? 'selected' : ''; ?> value="<?= $categorie->id_categorie; ?>"><?= $categorie->getNameLang(service('Settings')->setting_id_lang); ?></option>
                 <?php } else { ?>
                     <option value="<?= $categorie->id_categorie; ?>"><?= $categorie->getNameLang(service('Settings')->setting_id_lang); ?></option>
                 <?php } ?>
@@ -55,10 +55,17 @@
 </div>
 
 <div class="form-group row kt-shape-bg-color-1">
+    <label for="sous_name" class="col-xl-3 col-lg-3 col-form-label"><?= ucfirst(lang('Core.sous_name')); ?>* : </label>
+    <div class="col-lg-9 col-xl-6">
+        <?= form_input_spread('sous_name', $form->_prepareLang(), 'id="sous_name" class="form-control lang"', 'text', true); ?>
+    </div>
+</div>
+
+<div class="form-group row kt-shape-bg-color-1">
     <label for="sous_name" class="col-xl-3 col-lg-3 col-form-label"><?= ucfirst(lang('Core.slug')); ?>* : </label>
     <div class="col-lg-9 col-xl-6">
         <?= form_input_spread('slug', $form->_prepareLang(), 'id="slug" class="form-control lang"', 'text', true); ?>
-        <span class="form-text text-muted"><?= lang('Core.Voir la page :'); ?> <a target="_blank" href="<?= base_urlFront($form->slug); ?>"><?= base_urlFront($form->slug); ?></a></span>
+        <span class="form-text text-muted"><?= lang('Core.Voir la page :'); ?> <a target="_blank" href="<?= base_urlFront('actualites/' . $form->getLink(1)); ?>"><?= base_urlFront('actualites/' . $form->getLink(1)); ?></a></span>
     </div>
 </div>
 
@@ -127,19 +134,19 @@
 
             <div id="picture_one" class="picture_one" data-field="picture_one">
                 <div class="kt-section__content_media">
-                <?php if (!empty($form->getPictureOneAtt())) { ?>
                     <?php if (!empty($form->getPictureOneAtt())) { ?>
-                        <?php $pictureOne = $form->getPictureOneAtt(); ?>
-                        <div class="kt-media is_unique kt-media_<?= $pictureOne->media->id_media; ?>" data-id-media="<?= $pictureOne->media->id_media; ?>">
-                            <a href="javascript:;" class="kt-media">
-                                <img src="<?= $pictureOne->media->filename; ?>" alt="image">
-                            </a>
-                            <label class="kt-avatar__remove deletefile" data-container="body" data-only="true" data-toggle="kt-tooltip" title="" data-placement="top" data-original-title="remove image" data-id-field="picture_one" data-id-media="<?= $pictureOne->media->id_media; ?>" data-format="<?= $pictureOne->media->format; ?>" data-id-file="<?= $pictureOne->media->filename; ?>">
-                                <i class="fa fa-times"></i>
-                            </label>
-                        </div>
+                        <?php if (!empty($form->getPictureOneAtt())) { ?>
+                            <?php $pictureOne = $form->getPictureOneAtt(); ?>
+                            <div class="kt-media is_unique kt-media_<?= $pictureOne->media->id_media; ?>" data-id-media="<?= $pictureOne->media->id_media; ?>">
+                                <a href="javascript:;" class="kt-media">
+                                    <img src="<?= $pictureOne->media->filename; ?>" alt="image">
+                                </a>
+                                <label class="kt-avatar__remove deletefile" data-container="body" data-only="true" data-toggle="kt-tooltip" title="" data-placement="top" data-original-title="remove image" data-id-field="picture_one" data-id-media="<?= $pictureOne->media->id_media; ?>" data-format="<?= $pictureOne->media->format; ?>" data-id-file="<?= $pictureOne->media->filename; ?>">
+                                    <i class="fa fa-times"></i>
+                                </label>
+                            </div>
+                        <?php } ?>
                     <?php } ?>
-                <?php } ?>
                 </div>
             </div>
         </div>
@@ -170,19 +177,19 @@
 
             <div id="picture_header" class="picture_header" data-field="picture_header">
                 <div class="kt-section__content_media">
-                <?php if (!empty($form->getPictureHeaderAtt())) { ?>
                     <?php if (!empty($form->getPictureHeaderAtt())) { ?>
-                        <?php $pictureHeader = $form->getPictureHeaderAtt(); ?>
-                        <div class="kt-media is_unique kt-media_<?= $pictureHeader->media->id_media; ?>" data-id-media="<?= $pictureHeader->media->id_media; ?>">
-                            <a href="javascript:;" class="kt-media">
-                                <img src="<?= $pictureHeader->media->filename; ?>" alt="image">
-                            </a>
-                            <label class="kt-avatar__remove deletefile" data-container="body" data-only="true" data-toggle="kt-tooltip" title="" data-placement="top" data-original-title="remove image" data-id-field="picture_header" data-id-media="<?= $pictureHeader->media->id_media; ?>" data-format="<?= $pictureHeader->media->format; ?>" data-id-file="<?= $pictureHeader->media->filename; ?>">
-                                <i class="fa fa-times"></i>
-                            </label>
-                        </div>
+                        <?php if (!empty($form->getPictureHeaderAtt())) { ?>
+                            <?php $pictureHeader = $form->getPictureHeaderAtt(); ?>
+                            <div class="kt-media is_unique kt-media_<?= $pictureHeader->media->id_media; ?>" data-id-media="<?= $pictureHeader->media->id_media; ?>">
+                                <a href="javascript:;" class="kt-media">
+                                    <img src="<?= $pictureHeader->media->filename; ?>" alt="image">
+                                </a>
+                                <label class="kt-avatar__remove deletefile" data-container="body" data-only="true" data-toggle="kt-tooltip" title="" data-placement="top" data-original-title="remove image" data-id-field="picture_header" data-id-media="<?= $pictureHeader->media->id_media; ?>" data-format="<?= $pictureHeader->media->format; ?>" data-id-file="<?= $pictureHeader->media->filename; ?>">
+                                    <i class="fa fa-times"></i>
+                                </label>
+                            </div>
+                        <?php } ?>
                     <?php } ?>
-                <?php } ?>
                 </div>
             </div>
         </div>

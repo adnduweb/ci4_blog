@@ -8,6 +8,7 @@ use Adnduweb\Ci4_blog\Models\CategoriesModel;
 class Article extends Entity
 {
     use \Tatter\Relations\Traits\EntityTrait;
+    use \App\Traits\BuilderEntityTrait;
     protected $table        = 'articles';
     protected $tableLang    = 'articles_langs';
     protected $tablecArtCat = 'articles_categories';
@@ -35,15 +36,6 @@ class Article extends Entity
     public function getSlug()
     {
         return $this->attributes['slug'] ?? null;
-    }
-
-    public function getNameLang(int $id_lang)
-    {
-        foreach ($this->articles_langs as $lang) {
-            if ($id_lang == $lang->id_lang) {
-                return $lang->name ?? null;
-            }
-        }
     }
 
     public function getDescription(int $id_lang)
@@ -82,7 +74,7 @@ class Article extends Entity
         }
     }
 
-    public function getLink($slug = false, int $id_lang)
+    public function getLinkArticle($slug = false, int $id_lang)
     {
         foreach ($this->articles_langs as $lang) {
             if ($id_lang == $lang->id_lang) {
@@ -115,11 +107,11 @@ class Article extends Entity
                 $image = $mediasModel->where('id_media', $getAttrOptions->media->id_media)->get()->getRow();
             }
             if (is_object($image)) {
-                if($format == true){
-                    $getAttrOptions->media->filename =  base_url() . '/uploads/'.$format.'/' . $image->namefile;
+                if ($format == true) {
+                    $getAttrOptions->media->filename =  base_url() . '/uploads/' . $format . '/' . $image->namefile;
                     list($width, $height, $type, $attr) =  getimagesize($getAttrOptions->media->filename);
-                    $getAttrOptions->media->dimensions = (object)['width' => $width, 'height' => $height];
-                    $getAttrOptions->media->format = $format;  
+                    $getAttrOptions->media->dimensions = (object) ['width' => $width, 'height' => $height];
+                    $getAttrOptions->media->format = $format;
                 }
                 $image->class = 'adw_lazyload ';
                 $image->options = $getAttrOptions;
@@ -174,6 +166,7 @@ class Article extends Entity
                     'id_article'      => $key,
                     'id_lang'           => $k,
                     'name'              => $v['name'],
+                    'sous_name'         => $v['sous_name'],
                     'description_short' => $v['description_short'],
                     'description'       => $v['description'],
                     'meta_title'        => $v['meta_title'],
@@ -188,6 +181,7 @@ class Article extends Entity
                     'id_article' => $this->tableLang->id_article,
                     'id_lang'      => $this->tableLang->id_lang,
                     'name'              => $v['name'],
+                    'sous_name'         => $v['sous_name'],
                     'description_short' => $v['description_short'],
                     'description'       => $v['description'],
                     'meta_title'        => $v['meta_title'],
