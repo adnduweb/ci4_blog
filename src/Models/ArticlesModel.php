@@ -145,6 +145,26 @@ class ArticlesModel extends Model
         return false;
     }
 
+    public function getLast(int $id_lang)
+    {
+        $this->article_table->select();
+        $this->article_table->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.id_article');
+        $this->article_table->where('deleted_at IS NULL AND ' . $this->tableLang . '.id_lang="' . $id_lang . '"');
+        $this->article_table->limit(1);
+        $this->article_table->orderBy($this->table . '.id_article ASC ');
+        $article_table = $this->article_table->get()->getRow();
+        return $article_table;
+    }
+
+
+    public function getLink(int $id_article, int $id_lang)
+    {
+        $this->article_table->select('slug');
+        $this->article_table->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.id_article');
+        $this->article_table->where([$this->table . '.id_article' => $id_article, 'id_lang' => $id_lang]);
+        $article_table = $this->article_table->get()->getRow();
+        return $article_table;
+    }
 
     /**
      * @param string $column

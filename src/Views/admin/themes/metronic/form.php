@@ -106,7 +106,8 @@
 
 
 <?php if (isset($form->builders) && !empty($form->builders)) { ?>
-	<?php $b = 1; foreach ($form->builders as $builder) { ?>
+	<?php $b = 1;
+	foreach ($form->builders as $builder) { ?>
 		<?php if ($builder->type == "textfield" || $builder->type == "textareafield") {
 			$field = isset($builder->id_field) ? $builder->id_field : "__field__"; ?>
 			<script>
@@ -131,7 +132,7 @@
 				});
 			</script>
 		<?php } ?>
-		<?php if ($builder->type == "imagefield" ) {
+		<?php if ($builder->type == "imagefield" || $builder->type == "diaporamafield" || $builder->type == "actufield") {
 			$field = isset($builder->id_field) ? $builder->id_field : "__field__"; ?>
 			<script>
 				jQuery(document).ready(function() {
@@ -139,7 +140,8 @@
 				});
 			</script>
 		<?php } ?>
-	<?php $b++; } ?>
+	<?php $b++;
+	} ?>
 <?php } ?>
 
 <?= $this->endSection() ?>

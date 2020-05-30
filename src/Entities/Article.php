@@ -29,6 +29,11 @@ class Article extends Entity
     {
         return $this->id_article ?? null;
     }
+
+    public function getType()
+    {
+        return $this->table;
+    }
     public function getName()
     {
         return $this->attributes['name'] ?? null;

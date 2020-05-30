@@ -43,14 +43,14 @@ class FrontArticleController extends \App\Controllers\Front\FrontController
         }
 
         // check cache
-        if (env('cache.active') == true) {
-            if ($this->page = cache("pages:{$articleLight->id_article}")) {
-                $this->data['page'] = $this->page;
-            } else {
-                $this->data['page'] = $this->tableModel->where('id_article', $articleLight->id_article)->first();
-                $this->cache("pages:{$articleLight->id_article}", $this->data['page']);
-            }
-        }
+        // if (env('cache.active') == true) {
+        //     if ($this->page = cache("pages:{$articleLight->id_article}")) {
+        //         $this->data['page'] = $this->page;
+        //     } else {
+        $this->data['page'] = $this->tableModel->where('id_article', $articleLight->id_article)->first();
+        //         $this->cache("pages:{$articleLight->id_article}", $this->data['page']);
+        //     }
+        // }
 
         $this->data['no_follow_no_index'] = ($this->data['page']->no_follow_no_index == 0) ?  'index follow' :  'no-index no-follow';
         $this->data['id']  = str_replace('/', '', $this->data['page']->slug);

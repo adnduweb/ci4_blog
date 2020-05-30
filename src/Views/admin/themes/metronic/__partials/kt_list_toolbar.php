@@ -32,28 +32,6 @@
                 <div class="kt-subheader__group kt-hidden" id="kt_subheader_group_actions">
                     <div class="kt-subheader__desc"><span id="kt_subheader_group_selected_rows"></span> <?= lang('Core.elements_selected'); ?>:</div>
                     <div class="btn-toolbar kt-margin-l-20">
-                        <!-- <div class="dropdown" id="kt_subheader_group_actions_status_change">
-                            <button type="button" class="btn btn-label-brand btn-bold btn-sm dropdown-toggle" data-toggle="dropdown">
-                                <?= lang('Core.status_update'); ?>
-                            </button>
-                            <div class="dropdown-menu">
-                                <ul class="kt-nav">
-                                    <li class="kt-nav__section kt-nav__section--first">
-                                        <span class="kt-nav__section-text"><?= lang('Core.change_status_to'); ?>:</span>
-                                    </li>
-                                    <li class="kt-nav__item">
-                                        <a href="#" class="kt-nav__link" data-toggle="status-change" data-status="1">
-                                            <span class="kt-nav__link-text" data-status="1"><span class="kt-badge kt-badge--unified-success kt-badge--inline kt-badge--bold"><?= lang('Core.active'); ?></span></span>
-                                        </a>
-                                    </li>
-                                    <li class="kt-nav__item">
-                                        <a href="#" class="kt-nav__link" data-toggle="status-change" data-status="0">
-                                            <span class="kt-nav__link-text" data-status="0"><span class="kt-badge kt-badge--unified-danger kt-badge--inline kt-badge--bold"><?= lang('Core.desactive'); ?></span></span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div> -->
                         <div class="dropdown" id="kt_subheader_group_actions_status_change-etat">
                             <button type="button" class="btn btn-label-brand btn-bold btn-sm dropdown-toggle" data-toggle="dropdown">
                                 <?= lang('Core.status_update_etat'); ?>
@@ -64,11 +42,11 @@
                                         <span class="kt-nav__section-text"><?= lang('Core.change_status_to_etat'); ?>:</span>
                                     </li>
                                     <?php foreach ($gettype as $k => $v) { ?>
-                                    <li class="kt-nav__item">
-                                        <a href="#" class="kt-nav__link" data-toggle="status-change" data-status="1">
-                                            <span class="kt-nav__link-text" data-status-etat="<?= $k; ?>"><span class="kt-badge kt-badge--unified-dark kt-badge--inline kt-badge--bold"><?= lang('Core.' . $v); ?></span></span>
-                                        </a>
-                                    </li>
+                                        <li class="kt-nav__item">
+                                            <a href="#" class="kt-nav__link" data-toggle="status-change" data-status="1">
+                                                <span class="kt-nav__link-text" data-status-etat="<?= $k; ?>"><span class="kt-badge kt-badge--unified-dark kt-badge--inline kt-badge--bold"><?= lang('Core.' . $v); ?></span></span>
+                                            </a>
+                                        </li>
                                     <?php } ?>
                                 </ul>
                             </div>
@@ -102,7 +80,7 @@
             <?php } ?>
 
             <?php if (isset($add)) { ?>
-                <a href="/<?= env('CI_SITE_AREA'); ?>/<?= $_id_company; ?><?= $addPathController; ?>" class="btn btn-label-brand btn-bold">
+                <a href="/<?= env('CI_SITE_AREA'); ?><?= $addPathController; ?>" class="btn btn-label-brand btn-bold">
                     <?= $add; ?> </a>
             <?php } ?>
         </div>
