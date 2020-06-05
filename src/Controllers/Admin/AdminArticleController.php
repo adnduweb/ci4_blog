@@ -131,11 +131,11 @@ class AdminArticleController extends AdminController
         // Try to create the user
         $articleBase = new Article($this->request->getPost());
         $this->lang = $this->request->getPost('lang');
-        $articleBase->slug = strtolower(preg_replace('/[^a-zA-Z0-9\-]/', '', preg_replace('/\s+/', '-', $articleBase->slug)));
+        //$articleBase->slug = strtolower(preg_replace('/[^a-zA-Z0-9\-]/', '', preg_replace('/\s+/', '-', $articleBase->slug)));
         $articleBase->id_categorie = $articleBase->id_categorie_default;
         $articleBase->id_categorie_default = $articleBase->id_categorie_default[0];
         $articleBase->author_update = user()->id;
-        $articleBase->active = isset($articleBase->active) ? 1 : 0;
+        $articleBase->active =  1;
 
         // Les images
         $articleBase->picture_one = $this->getImagesPrep($articleBase->getPictureOneAtt());
@@ -181,11 +181,12 @@ class AdminArticleController extends AdminController
         // Try to create the user
         $articleBase = new Article($this->request->getPost());
         $this->lang = $this->request->getPost('lang');
-        $articleBase->slug = strtolower(preg_replace('/[^a-zA-Z0-9\-]/', '', preg_replace('/\s+/', '-', $articleBase->slug)));
+        //$articleBase->slug = strtolower(preg_replace('/[^a-zA-Z0-9\-]/', '', preg_replace('/\s+/', '-', $articleBase->slug)));
         $articleBase->id_categorie = $articleBase->id_categorie_default;
         $articleBase->id_categorie_default = $articleBase->id_categorie_default[0];
         $articleBase->author_created = user()->id;
         $articleBase->author_update = user()->id;
+        $articleBase->active = 1;
 
         // Les images
         $articleBase->picture_one = $this->getImagesPrep($articleBase->getPictureOneAtt());
@@ -245,6 +246,19 @@ class AdminArticleController extends AdminController
             $options = '';
         }
         return $options;
+    }
+
+    public function dupliquer(int $id_article)
+    {
+        try {
+            $this->tableModel->dupliquer($id_article);
+            Tools::set_message('success', lang('Core.save_data'), lang('Core.cool_success'));
+        } catch (\Exception $e) {
+            // print_r($e);
+            // exit;
+            Tools::set_message('danger', str_replace('::', '->', $e->getMessage()), lang('Core.warning_error'));
+            return redirect()->to('/' . CI_SITE_AREA . $this->pathcontroller);
+        }
     }
 
     public function ajaxProcessUpdate()

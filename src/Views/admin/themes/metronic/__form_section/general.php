@@ -57,7 +57,7 @@
 <div class="form-group row kt-shape-bg-color-1">
     <label for="sous_name" class="col-xl-3 col-lg-3 col-form-label"><?= ucfirst(lang('Core.sous_name')); ?>* : </label>
     <div class="col-lg-9 col-xl-6">
-        <?= form_input_spread('sous_name', $form->_prepareLang(), 'id="sous_name" class="form-control lang"', 'text', true); ?>
+        <?= form_input_spread('sous_name', $form->_prepareLang(), 'id="sous_name" class="form-control lang"', 'text', false); ?>
     </div>
 </div>
 
@@ -72,14 +72,14 @@
 <div class="form-group row kt-shape-bg-color-1">
     <label for="description_short" class="col-xl-3 col-lg-3 col-form-label"><?= ucfirst(lang('Core.description_short')); ?>* : </label>
     <div class="col-lg-9 col-xl-6">
-        <?= form_textarea_spread('description_short', $form->_prepareLang(), 'class="form-control lang"', true); ?>
+        <?= form_textarea_spread('description_short', $form->_prepareLang(), 'class="form-control lang"', false); ?>
     </div>
 </div>
 
 <div class="form-group row kt-shape-bg-color-1">
     <label for="description" class="col-xl-3 col-lg-3 col-form-label"><?= ucfirst(lang('Core.description')); ?>* : </label>
     <div class="col-lg-9 col-xl-6">
-        <?= form_textarea_spread('description', $form->_prepareLang(), 'id="description" class="form-control lang"', true, 'ckeditor'); ?>
+        <?= form_textarea_spread('description', $form->_prepareLang(), 'id="description" class="form-control lang"', false, 'ckeditor'); ?>
     </div>
 </div>
 
@@ -97,14 +97,14 @@
 <div class="form-group row kt-shape-bg-color-1">
     <label for="meta_title" class="col-xl-3 col-lg-3 col-form-label"><?= ucfirst(lang('Core.meta_title')); ?>* : </label>
     <div class="col-lg-9 col-xl-6">
-        <?= form_input_spread('meta_title', $form->_prepareLang(), 'id="meta_title" class="form-control lang"', 'text', true); ?>
+        <?= form_input_spread('meta_title', $form->_prepareLang(), 'id="meta_title" class="form-control lang"', 'text', false); ?>
     </div>
 </div>
 
 <div class="form-group row kt-shape-bg-color-1">
     <label for="meta_description" class="col-xl-3 col-lg-3 col-form-label"><?= ucfirst(lang('Core.meta_description')); ?>* : </label>
     <div class="col-lg-9 col-xl-6">
-        <?= form_input_spread('meta_description', $form->_prepareLang(), 'id="meta_description" class="form-control lang"', 'text', true); ?>
+        <?= form_input_spread('meta_description', $form->_prepareLang(), 'id="meta_description" class="form-control lang"', 'text', false); ?>
     </div>
 </div>
 

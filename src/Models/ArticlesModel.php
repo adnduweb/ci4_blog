@@ -35,7 +35,7 @@ class ArticlesModel extends Model
     protected $without            = [];
     protected $primaryKey         = 'id_article';
     protected $returnType         = Article::class;
-    protected $useSoftDeletes     = true;
+    protected $useSoftDeletes     = false;
     protected $allowedFields      = ['id_categorie_default', 'author_created', 'author_created', 'active', 'important', 'picture_one', 'picture_header', 'no_follow_no_index', 'order', 'type'];
     protected $useTimestamps      = true;
     protected $validationMessages = [];
@@ -132,7 +132,7 @@ class ArticlesModel extends Model
 
     public function getIdArticleBySlug($slug)
     {
-        $this->article_table->select($this->table . '.' . $this->primaryKey . ', active');
+        $this->article_table->select($this->table . '.' . $this->primaryKey . ', active, type');
         $this->article_table->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.id_article');
         $this->article_table->where('deleted_at IS NULL AND ' . $this->tableLang . '.slug="' . $slug . '"');
         $article_table = $this->article_table->get()->getRow();
@@ -164,6 +164,35 @@ class ArticlesModel extends Model
         $this->article_table->where([$this->table . '.id_article' => $id_article, 'id_lang' => $id_lang]);
         $article_table = $this->article_table->get()->getRow();
         return $article_table;
+    }
+
+    public function dupliquer(int $id_article)
+    {
+
+        //Article
+        $this->article_table->select();
+        $this->article_table->where(['id_article' => $id_article]);
+        $getArticle = $this->article_table->get()->getRow();
+
+        // Les langues Article
+
+        // echo $this->article_table->getCompiledSelect();
+        // exit;
+        unset($getArticlerr->id_article);
+        $Article = new Article((array) $getArticle);
+        print_r($Article);
+        print_r($this->save($Article));
+
+
+        $id_article = $this->tableModel->insertID();
+
+        // On enregistre les langues
+        $this->lang = [''];
+        $articleBase->saveLang($this->lang, $id_article);
+        $builder->insert($data);
+
+
+        // exit;
     }
 
     /**

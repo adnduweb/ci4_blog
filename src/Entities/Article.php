@@ -30,7 +30,7 @@ class Article extends Entity
         return $this->id_article ?? null;
     }
 
-    public function getType()
+    public function getClassEntities()
     {
         return $this->table;
     }

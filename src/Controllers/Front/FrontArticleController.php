@@ -28,29 +28,20 @@ class FrontArticleController extends \App\Controllers\Front\FrontController
 
     public function show($slug)
     {
-        $locale = 1;
-        $setting_supportedLocales = unserialize(service('Settings')->setting_supportedLocales);
-        foreach ($setting_supportedLocales as $setting_supportedLocale) {
-            $v = explode('|', $setting_supportedLocale);
-            if ($this->request->getLocale() == $v[1]) {
-                $locale = $v[0];
-            }
-        }
 
         $articleLight = $this->tableModel->getIdArticleBySlug($slug);
+
+        // 404 car soit elle n'existe pas ou elle n'est pas active
         if (empty($articleLight)) {
             throw new \CodeIgniter\Exceptions\PageNotFoundException(lang('Core.Cannot find the page item : {0}', [$slug]));
         }
 
-        // check cache
-        // if (env('cache.active') == true) {
-        //     if ($this->page = cache("pages:{$articleLight->id_article}")) {
-        //         $this->data['page'] = $this->page;
-        //     } else {
+        // il n'est pas encore publié
+        if ($articleLight->type != '1') {
+            return redirect()->to(base_urlFront(), 302);
+        }
+
         $this->data['page'] = $this->tableModel->where('id_article', $articleLight->id_article)->first();
-        //         $this->cache("pages:{$articleLight->id_article}", $this->data['page']);
-        //     }
-        // }
 
         $this->data['no_follow_no_index'] = ($this->data['page']->no_follow_no_index == 0) ?  'index follow' :  'no-index no-follow';
         $this->data['id']  = str_replace('/', '', $this->data['page']->slug);

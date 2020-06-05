@@ -7,6 +7,7 @@ $routes->group(CI_SITE_AREA, ['namespace' => 'Adnduweb\Ci4_blog\Controllers\Admi
     $routes->post('(:any)/blog/articles/edit/(:any)', 'AdminArticleController::postProcess/$2');
     $routes->get('(:any)/blog/articles/add', 'AdminArticleController::renderForm');
     $routes->post('(:any)/blog/articles/add', 'AdminArticleController::postProcess');
+    $routes->get('(:any)/blog/articles/dupliquer/(:segment)', 'AdminArticleController::dupliquer/$2');
 
     $routes->get('(:any)/blog/categories', 'AdminCategorieController::renderViewList', ['as' => 'page-categorie']);
     $routes->get('(:any)/blog/categories/edit/(:any)', 'AdminCategorieController::renderForm/$2');

@@ -105,7 +105,7 @@ class Migration_create_table_blog extends Migration
         $this->forge->addKey(['id_article', 'id_categorie'], FALSE, TRUE);
         $this->forge->addKey('created_at');
         $this->forge->addKey('deleted_at');
-        $this->forge->addForeignKey('id_article', 'articles', 'id_article', false, false);
+        $this->forge->addForeignKey('id_article', 'articles', 'id_article', false, 'CASCADE');
         $this->forge->addForeignKey('id_categorie', 'categories', 'id_categorie', false, false);
         $this->forge->createTable('articles_categories', true);
 
