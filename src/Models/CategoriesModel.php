@@ -59,12 +59,29 @@ class CategoriesModel extends Model
         $this->article_categorie = $this->db->table('articles_categories');
     }
 
+    public function getAllCategoriesOptionParent()
+    {
+        $instance = [];
+        $this->categories->select($this->table . '.id_categorie, slug, name, id_parent, created_at');
+        $this->categories->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.id_categorie');
+        $this->categories->where('deleted_at IS NULL AND id_lang = ' . service('settings')->setting_bo_id_lang);
+        $this->categories->orderBy($this->table . '.id_categorie DESC');
+        $categoriess = $this->categories->get()->getResult();
+        //echo $this->categories->getCompiledSelect(); exit;
+        if (!empty($categoriess)) {
+            foreach ($categoriess as $categories) {
+                $instance[] = new Categorie((array) $categories);
+            }
+        }
+        return $instance;
+    }
+
     public function getAllList(int $page, int $perpage, array $sort, array $query)
     {
         $this->categories->select();
         $this->categories->select('created_at as date_create_at');
         $this->categories->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.id_categorie');
-         if (isset($query[0]) && is_array($query)) {
+        if (isset($query[0]) && is_array($query)) {
             $this->categories->where('deleted_at IS NULL AND (name LIKE "%' . $query[0] . '%" OR description_short LIKE "%' . $query[0] . '%") AND id_lang = ' . service('settings')->setting_id_lang);
             $this->categories->limit(0, $page);
         } else {
@@ -86,7 +103,7 @@ class CategoriesModel extends Model
     {
         $this->categories->select($this->table . '.' . $this->primaryKey);
         $this->categories->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.id_categorie');
-         if (isset($query[0]) && is_array($query)) {
+        if (isset($query[0]) && is_array($query)) {
             $this->categories->where('deleted_at IS NULL AND (name LIKE "%' . $query[0] . '%" OR description_short LIKE "%' . $query[0] . '%") AND id_lang = ' . service('settings')->setting_id_lang);
         } else {
             $this->categories->where('deleted_at IS NULL AND id_lang = ' . service('settings')->setting_id_lang);
@@ -207,7 +224,8 @@ class CategoriesModel extends Model
     }
 
 
-    public function getAllCat(){
+    public function getAllCat()
+    {
         $this->categories->select($this->table . '.' . $this->primaryKey . ', name');
         $this->categories->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.id_categorie');
         $this->categories->where('deleted_at IS NULL AND id_lang = ' . service('settings')->setting_id_lang);

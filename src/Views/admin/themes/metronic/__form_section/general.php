@@ -35,14 +35,15 @@
     <label for="categorie" class="col-xl-3 col-lg-3 col-form-label"><?= ucfirst(lang('Core.categorie')); ?></label>
     <div class="col-lg-9 col-xl-6">
         <select required name="id_categorie_default[]" class="form-control selectpicker file kt-selectpicker" publied-actions-box="true" title="<?= ucfirst(lang('Core.choose_one_of_the_following')); ?>" id="id_categorie_default">
-            <?php foreach ($form->categories as $categorie) { ?>
+            <!-- <?php foreach ($form->categories as $categorie) { ?>
                 <?php if (!empty($form->getCatByArt)) { ?>
                     <option <?= isset($form->getCatByArt[$categorie->id_categorie]) ? 'selected' : ''; ?> value="<?= $categorie->id_categorie; ?>"><?= $categorie->getNameLang(service('Settings')->setting_id_lang); ?></option>
                 <?php } else { ?>
                     <option value="<?= $categorie->id_categorie; ?>"><?= $categorie->getNameLang(service('Settings')->setting_id_lang); ?></option>
                 <?php } ?>
 
-            <?php } ?>
+            <?php } ?> -->
+            <?= generate_menuOption(0, 0, $form->allCategories, $form->id_categorie_default); ?>
         </select>
     </div>
 </div>

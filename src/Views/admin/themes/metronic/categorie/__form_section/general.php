@@ -21,11 +21,13 @@
     <label for="id_parent" class="col-xl-3 col-lg-3 col-form-label"><?= ucfirst(lang('Core.menu_parent')); ?>* : </label>
     <div class="col-lg-9 col-xl-6">
         <select name="id_parent" class="form-control kt-selectpicker" title="<?= ucfirst(lang('Core.choose_one_of_the_following')); ?>" id="id_parent">
-            <?php foreach ($form->categories as $categorie) { ?>
+            <!-- <?php foreach ($form->categories as $categorie) { ?>
                 <option <?= $categorie->id_categorie == $form->id_parent ? 'selected disabled ' : ''; ?> <?= $categorie->id_categorie == $form->id_categorie ? 'disabled ' : ''; ?> value="<?= $categorie->id_categorie; ?>"><?= ucfirst($categorie->name); ?></option>
-            <?php } ?>
+            <?php } ?> -->
+            <?= generate_menuOption(0, 0, $form->allCategories, $form->id_parent); ?>
         </select>
     </div>
+
 </div>
 
 <div class="form-group row kt-shape-bg-color-1">

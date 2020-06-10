@@ -174,22 +174,21 @@ class ArticlesModel extends Model
         $this->article_table->where(['id_article' => $id_article]);
         $getArticle = $this->article_table->get()->getRow();
 
-        // Les langues Article
-
-        // echo $this->article_table->getCompiledSelect();
-        // exit;
-        unset($getArticlerr->id_article);
+        unset($getArticle->id_article);
+        $getArticle->type = 4;
         $Article = new Article((array) $getArticle);
-        print_r($Article);
-        print_r($this->save($Article));
-
-
-        $id_article = $this->tableModel->insertID();
+        $this->save($Article);
+        $id_articleNew = $this->insertID();
 
         // On enregistre les langues
-        $this->lang = [''];
-        $articleBase->saveLang($this->lang, $id_article);
-        $builder->insert($data);
+        $this->articles_langs->select();
+        $this->articles_langs->where(['id_article' => $id_article]);
+        $getArticleLangs = $this->articles_langs->get()->getRow();
+        $getArticleLangs->id_article = $id_articleNew;
+        $this->articles_langs->insert((array) $getArticleLangs);
+
+        // On enregistre les categories par default
+        $this->article_categorie->insert(['id_article' => $id_articleNew, 'id_categorie' => $getArticle->id_categorie_default]);
 
 
         // exit;

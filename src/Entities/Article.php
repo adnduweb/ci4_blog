@@ -43,6 +43,15 @@ class Article extends Entity
         return $this->attributes['slug'] ?? null;
     }
 
+    public function getBundleSlug(int $id_lang)
+    {
+        foreach ($this->articles_langs as $lang) {
+            if ($id_lang == $lang->id_lang) {
+                return $lang->slug ?? null;
+            }
+        }
+    }
+
     public function getDescription(int $id_lang)
     {
         foreach ($this->articles_langs as $lang) {

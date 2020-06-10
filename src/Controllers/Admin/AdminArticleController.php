@@ -38,7 +38,7 @@ class AdminArticleController extends AdminController
     public $item = 'blog';
     public $type = 'Adnduweb/Ci4_blog';
     public $pathcontroller  = '/public/blog/articles';
-    public $fieldList = 'name';
+    public $fieldList = 'articles.id_article';
     public $add = true;
     public $multilangue = true;
 
@@ -109,6 +109,7 @@ class AdminArticleController extends AdminController
             $this->data['form']->builders = $temp;
         }
 
+        $this->data['form']->allCategories = $this->categories_model->getAllCategoriesOptionParent();
         $this->data['form']->gettype = $this->getType();
         $this->data['form']->categories =  $this->categories_model->getlist();
         $this->data['form']->getCatByArt = $this->tableModel->getCatByArt($id);
@@ -252,7 +253,8 @@ class AdminArticleController extends AdminController
     {
         try {
             $this->tableModel->dupliquer($id_article);
-            Tools::set_message('success', lang('Core.save_data'), lang('Core.cool_success'));
+            Tools::set_message('success', lang('Core.save_data_dupliquer'), lang('Core.cool_success'));
+            return redirect()->to('/' . CI_SITE_AREA . $this->pathcontroller);
         } catch (\Exception $e) {
             // print_r($e);
             // exit;

@@ -94,6 +94,7 @@ class AdminCategorieController extends AdminController
             }
         }
 
+        $this->data['form']->allCategories = $this->tableModel->getAllCategoriesOptionParent();
         $this->data['form']->id_module = $this->idModule;
         $this->data['form']->id_item = $id;
         $this->data['form']->categories = $this->tableModel->join('categories_langs', 'categories.id_categorie = categories_langs.id_categorie')->where('id_lang', 1)->orderBy('name', 'ACS')->get()->getResult();

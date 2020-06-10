@@ -42,7 +42,7 @@ class BlogSeeder extends \CodeIgniter\Database\Seeder
                 'meta_title'        => $lipsum->sentence(),
                 'meta_description'  => $lipsum->sentence(),
                 'tags'              => 'test,gsdfgsdf,fgfsdgdsfg,fgsdfg',
-                'slug'              => '/jkljk-dsfgsdfg-fgsdfgsdfg',
+                'slug'              => 'jkljk-dsfgsdfg-fgsdfgsdfg',
             ]
 
         ];
