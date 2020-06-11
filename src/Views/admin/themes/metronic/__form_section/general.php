@@ -66,7 +66,7 @@
     <label for="sous_name" class="col-xl-3 col-lg-3 col-form-label"><?= ucfirst(lang('Core.slug')); ?>* : </label>
     <div class="col-lg-9 col-xl-6">
         <?= form_input_spread('slug', $form->_prepareLang(), 'id="slug" class="form-control lang"', 'text', true); ?>
-        <span class="form-text text-muted"><?= lang('Core.Voir la page :'); ?> <a target="_blank" href="<?= base_urlFront('actualites/' . $form->getLink(1)); ?>"><?= base_urlFront('actualites/' . $form->getLink(1)); ?></a></span>
+        <span class="form-text text-muted"><?= lang('Core.Voir la page :'); ?> <a target="_blank" href="<?= base_urlFront(env('url.blog') . '/' . $form->getLink(1)); ?>"><?= base_urlFront(env('url.blog') . '/' . $form->getLink(1)); ?></a></span>
     </div>
 </div>
 
