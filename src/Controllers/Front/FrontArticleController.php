@@ -58,7 +58,7 @@ class FrontArticleController extends \App\Controllers\Front\FrontController
             ksort($temp);
             $this->data['page']->builders = $temp;
         }
-        // print_r($this->data['page']->builders);
+        // print_r($this->data['page']->getLangsLink());
         // exit;
         return view($this->get_current_theme_view('__template_part/article_single', 'default'), $this->data);
     }

@@ -4,14 +4,15 @@ namespace Adnduweb\Ci4_blog\Entities;
 
 use CodeIgniter\Entity;
 use Adnduweb\Ci4_blog\Models\CategoriesModel;
+use CodeIgniter\I18n\Time;
 
 class Article extends Entity
 {
     use \Tatter\Relations\Traits\EntityTrait;
     use \App\Traits\BuilderEntityTrait;
-    protected $table        = 'articles';
-    protected $tableLang    = 'articles_langs';
-    protected $tablecArtCat = 'articles_categories';
+    protected $table        = 'b_article';
+    protected $tableLang    = 'b_article_lang';
+    protected $tablecArtCat = 'b_article_category';
     protected $primaryKey   = 'id_article';
 
     protected $datamap = [];
@@ -36,7 +37,15 @@ class Article extends Entity
     }
     public function getName()
     {
-        return $this->attributes['name'] ?? null;
+        if (isset($this->b_article_lang)) {
+            foreach ($this->b_article_lang as $lang) {
+                if (service('switchlanguage')->getIdLocale() == $lang->id_lang) {
+                    return $lang->description ?? null;
+                }
+            }
+        } else {
+            return $this->attributes['name'] ?? null;
+        }
     }
     public function getSlug()
     {
@@ -45,53 +54,71 @@ class Article extends Entity
 
     public function getBundleSlug(int $id_lang)
     {
-        foreach ($this->articles_langs as $lang) {
+        foreach ($this->b_article_lang as $lang) {
             if ($id_lang == $lang->id_lang) {
                 return $lang->slug ?? null;
             }
         }
     }
 
-    public function getDescription(int $id_lang)
+    public function getDescription()
     {
-        foreach ($this->articles_langs as $lang) {
-            if ($id_lang == $lang->id_lang) {
-                return $lang->description ?? null;
+        if (isset($this->b_article_lang)) {
+            foreach ($this->b_article_lang as $lang) {
+                if (service('switchlanguage')->getIdLocale() == $lang->id_lang) {
+                    return $lang->description ?? null;
+                }
             }
+        } else {
+            return $this->attributes['description'] ?? null;
         }
     }
 
-    public function getDescriptionShort(int $id_lang)
+    public function getDescriptionShort()
     {
-        foreach ($this->articles_langs as $lang) {
-            if ($id_lang == $lang->id_lang) {
-                return $lang->description_short ?? null;
+        if (isset($this->b_article_lang)) {
+            foreach ($this->b_article_lang as $lang) {
+                if (service('switchlanguage')->getIdLocale() == $lang->id_lang) {
+                    return $lang->description_short ?? null;
+                }
             }
+        } else {
+            return $this->attributes['description_short'] ?? null;
         }
     }
-
-    public function get_MetaDescription(int $id_lang)
+    public function getUpdated()
     {
-        foreach ($this->articles_langs as $lang) {
-            if ($id_lang == $lang->id_lang) {
+        $format = service('switchlanguage')->getFormat();
+        $date = (!empty($this->attributes['updated_at'])) ? $this->attributes['updated_at'] : $this->attributes['created_at'];
+        $date = $this->mutateDate($date);
+        $timezone = $this->timezone ?? app_timezone();
+        $date->setTimezone($timezone);
+        return $date->format($format);
+    }
+
+
+    public function get_MetaDescription()
+    {
+        foreach ($this->b_article_lang as $lang) {
+            if (service('switchlanguage')->getIdLocale() == $lang->id_lang) {
                 return $lang->metat_description ?? null;
             }
         }
     }
 
-    public function get_MetaTitle(int $id_lang)
+    public function get_MetaTitle()
     {
-        foreach ($this->articles_langs as $lang) {
-            if ($id_lang == $lang->id_lang) {
+        foreach ($this->b_article_lang as $lang) {
+            if (service('switchlanguage')->getIdLocale() == $lang->id_lang) {
                 return $lang->meta_title ?? null;
             }
         }
     }
 
-    public function getLinkArticle($slug = false, int $id_lang)
+    public function getLinkArticle($slug = false)
     {
-        foreach ($this->articles_langs as $lang) {
-            if ($id_lang == $lang->id_lang) {
+        foreach ($this->b_article_lang as $lang) {
+            if (service('switchlanguage')->getIdLocale() == $lang->id_lang) {
                 return base_urlFront($slug . '/' . $lang->slug);
             }
         }
@@ -120,6 +147,8 @@ class Article extends Entity
             if (empty($image)) {
                 $image = $mediasModel->where('id_media', $getAttrOptions->media->id_media)->get()->getRow();
             }
+            // print_r($image);
+            // exit;
             if (is_object($image)) {
                 if ($format == true) {
                     $getAttrOptions->media->filename =  base_url() . '/uploads/' . $format . '/' . $image->namefile;
@@ -149,7 +178,7 @@ class Article extends Entity
     {
         $name = [];
         $i = 0;
-        foreach ($this->articles_langs as $lang) {
+        foreach ($this->b_article_lang as $lang) {
             $name[$lang->id_lang]['name'] = $lang->name;
             $i++;
         }
@@ -161,7 +190,7 @@ class Article extends Entity
     {
         $lang = [];
         if (!empty($this->id_article)) {
-            foreach ($this->articles_langs as $tabs_lang) {
+            foreach ($this->b_article_lang as $tabs_lang) {
                 $lang[$tabs_lang->id_lang] = $tabs_lang;
             }
         }
@@ -219,13 +248,13 @@ class Article extends Entity
 
         $builder->delete(['id_article' => $id_article]);
 
-        foreach ($data->id_categorie as $k => $v) {
+        foreach ($data->id_category as $k => $v) {
 
-            $this->tablecArtCat =  $builder->where(['id_categorie' => $v, 'id_article' => $id_article])->get()->getRow();
+            $this->tablecArtCat =  $builder->where(['id_category' => $v, 'id_article' => $id_article])->get()->getRow();
             if (empty($this->tablecArtCat)) {
                 $data = [
                     'id_article'   =>  $id_article,
-                    'id_categorie' => $v,
+                    'id_category' => $v,
                     'created_at' => date('Y-m-d H:i:s'),
                 ];
                 $builder->insert($data);

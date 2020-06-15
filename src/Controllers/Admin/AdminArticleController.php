@@ -8,6 +8,8 @@ use App\Libraries\Tools;
 use Adnduweb\Ci4_blog\Entities\Article;
 use Adnduweb\Ci4_blog\Models\ArticlesModel;
 use Adnduweb\Ci4_blog\Models\CategoriesModel;
+use \CodeIgniter\Test\Fabricator;
+
 
 /**
  * Class Article
@@ -38,7 +40,8 @@ class AdminArticleController extends AdminController
     public $item = 'blog';
     public $type = 'Adnduweb/Ci4_blog';
     public $pathcontroller  = '/public/blog/articles';
-    public $fieldList = 'articles.id_article';
+    public $fake  = true;
+    public $fieldList = 'b_article.id_article';
     public $add = true;
     public $multilangue = true;
 
@@ -133,8 +136,8 @@ class AdminArticleController extends AdminController
         $articleBase = new Article($this->request->getPost());
         $this->lang = $this->request->getPost('lang');
         //$articleBase->slug = strtolower(preg_replace('/[^a-zA-Z0-9\-]/', '', preg_replace('/\s+/', '-', $articleBase->slug)));
-        $articleBase->id_categorie = $articleBase->id_categorie_default;
-        $articleBase->id_categorie_default = $articleBase->id_categorie_default[0];
+        $articleBase->id_category = $articleBase->id_category_default;
+        $articleBase->id_category_default = $articleBase->id_category_default[0];
         $articleBase->author_update = user()->id;
         $articleBase->active =  1;
 
@@ -183,8 +186,8 @@ class AdminArticleController extends AdminController
         $articleBase = new Article($this->request->getPost());
         $this->lang = $this->request->getPost('lang');
         //$articleBase->slug = strtolower(preg_replace('/[^a-zA-Z0-9\-]/', '', preg_replace('/\s+/', '-', $articleBase->slug)));
-        $articleBase->id_categorie = $articleBase->id_categorie_default;
-        $articleBase->id_categorie_default = $articleBase->id_categorie_default[0];
+        $articleBase->id_category = $articleBase->id_category_default;
+        $articleBase->id_category_default = $articleBase->id_category_default[0];
         $articleBase->author_created = user()->id;
         $articleBase->author_update = user()->id;
         $articleBase->active = 1;
@@ -320,5 +323,20 @@ class AdminArticleController extends AdminController
             }
         }
         return $this->failUnauthorized(lang('Js.not_autorized'), 400);
+    }
+
+    public function fake(int $num = 10)
+    {
+
+        $fabricator = new Fabricator($this->tableModel);
+        $makeArticle   = $fabricator->make($num);
+        $articles = $fabricator->create($num);
+        if (!empty($articles)) {
+            foreach ($articles as $article) {
+                $this->tableModel->fakelang($article->id_article);
+            }
+        }
+        Tools::set_message('success', lang('Core.fakedata'), lang('Core.cool_success'));
+        return redirect()->to('/' . CI_SITE_AREA . $this->pathcontroller);
     }
 }

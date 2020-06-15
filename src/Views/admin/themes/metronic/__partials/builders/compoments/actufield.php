@@ -33,7 +33,7 @@
                         <select required name="builder[<?= $field; ?>][options][cat]" class="form-control" title="<?= ucfirst(lang('Core.choose_one_of_the_following')); ?>" id="options_cat">
                             <option <?= (isset($optionsActus->orderBy) && $optionsActus->orderBy == 'all') ? 'selected' : ""; ?> value="all">Toutes</option>
                             <?php foreach ($categoriesModel->getAllCat() as $cat) { ?>
-                                <option <?= (isset($optionsActus->cat) && $optionsActus->cat == $cat->id_categorie) ? 'selected' : ""; ?> value="<?= $cat->id_categorie; ?>"><?= $cat->name; ?></option>
+                                <option <?= (isset($optionsActus->cat) && $optionsActus->cat == $cat->id_category) ? 'selected' : ""; ?> value="<?= $cat->id_category; ?>"><?= $cat->name; ?></option>
                             <?php } ?>
 
                         </select>

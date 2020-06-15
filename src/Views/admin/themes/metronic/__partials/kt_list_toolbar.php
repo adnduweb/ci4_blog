@@ -78,7 +78,10 @@
                     </div>
                 <?php   } ?>
             <?php } ?>
-
+            <?php if (inGroups(1, user()->id) && $fakedata == true) { ?>
+                <a href="/<?= env('CI_SITE_AREA'); ?><?= str_replace('add', 'fake', $addPathController); ?>/10" data-toggle="kt-tooltip" title="<?= lang('Core.Fake data'); ?>" data-placement="bottom" data-original-title="<?= lang('Core.Fake data'); ?>" class="btn btn-sm btn-icon btn-bg-light btn-icon-primary btn-hover-primary"> <i class="flaticon2-gear"></i>
+                </a>
+            <?php } ?>
             <?php if (isset($add)) { ?>
                 <a href="/<?= env('CI_SITE_AREA'); ?><?= $addPathController; ?>" class="btn btn-label-brand btn-bold">
                     <?= $add; ?> </a>

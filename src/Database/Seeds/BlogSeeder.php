@@ -17,7 +17,7 @@ class BlogSeeder extends \CodeIgniter\Database\Seeder
         $rows = [
             [
                 'id_article'           => 1,
-                'id_categorie_default' => 1,
+                'id_category_default' => 1,
                 'author_created'       => 1,
                 'author_update'        => 1,
                 'active'               => 1,
@@ -51,20 +51,20 @@ class BlogSeeder extends \CodeIgniter\Database\Seeder
         //$pages = new PagesModel();
         $db = \Config\Database::connect();
         foreach ($rows as $row) {
-            $article = $db->table('articles')->where('id_article', $row['id_article'])->get()->getRow();
+            $article = $db->table('b_article')->where('id_article', $row['id_article'])->get()->getRow();
             //print_r($article); exit;
             if (empty($article)) {
                 // No setting - add the row
-                $db->table('articles')->insert($row);
+                $db->table('b_article')->insert($row);
             }
         }
 
         foreach ($rowsLang as $rowLang) {
-            $articlelang = $db->table('articles_langs')->where('id_article', $rowLang['id_article'])->get()->getRow();
+            $articlelang = $db->table('b_article_lang')->where('id_article', $rowLang['id_article'])->get()->getRow();
 
             if (empty($articlelang)) {
                 // No setting - add the row
-                $db->table('articles_langs')->insert($rowLang);
+                $db->table('b_article_lang')->insert($rowLang);
             }
         }
 
@@ -72,7 +72,7 @@ class BlogSeeder extends \CodeIgniter\Database\Seeder
         // Define default project setting templates
         $rowsCat = [
             [
-                'id_categorie' => 1,
+                'id_category' => 1,
                 'id_parent'    => 0,
                 'order'        => 1,
                 'active'       => 1,
@@ -82,10 +82,13 @@ class BlogSeeder extends \CodeIgniter\Database\Seeder
         ];
         $rowsCatLang = [
             [
-                'id_categorie'      => 1,
+                'id_category'      => 1,
                 'id_lang'           => 1,
                 'name'              => 'Défaut',
                 'description_short' => $lipsum->sentence(),
+                'meta_title'        => $lipsum->sentence(),
+                'meta_description'  => $lipsum->sentence(),
+                'tags'              => 'test,gsdfgsdf,fgfsdgdsfg,fgsdfg',
                 'slug'              => 'default'
             ]
 
@@ -95,36 +98,36 @@ class BlogSeeder extends \CodeIgniter\Database\Seeder
         //$pages = new PagesModel();
         $db = \Config\Database::connect();
         foreach ($rowsCat as $row) {
-            $article = $db->table('categories')->where('id_categorie', $row['id_categorie'])->get()->getRow();
+            $article = $db->table('b_category')->where('id_category', $row['id_category'])->get()->getRow();
             //print_r($article); exit;
             if (empty($article)) {
                 // No setting - add the row
-                $db->table('categories')->insert($row);
+                $db->table('b_category')->insert($row);
             }
         }
 
         foreach ($rowsCatLang as $rowLang) {
-            $articlelang = $db->table('categories_langs')->where('id_categorie', $rowLang['id_categorie'])->get()->getRow();
+            $articlelang = $db->table('b_category_lang')->where('id_category', $rowLang['id_category'])->get()->getRow();
 
             if (empty($articlelang)) {
                 // No setting - add the row
-                $db->table('categories_langs')->insert($rowLang);
+                $db->table('b_category_lang')->insert($rowLang);
             }
         }
 
         //Association d'article et de categorie
         $rowsCatArt = [
             'id_article'   => 1,
-            'id_categorie' => 1,
+            'id_category' => 1,
             'created_at'   => date('Y-m-d H:i:s')
 
         ];
 
-        $rowsCatArtItem = $db->table('articles_categories')->where('id_article', $rowsCatArt['id_article'])->get()->getRow();
+        $rowsCatArtItem = $db->table('b_article_category')->where('id_article', $rowsCatArt['id_article'])->get()->getRow();
         //print_r($article); exit;
         if (empty($rowsCatArtItem)) {
             // No setting - add the row
-            $db->table('articles_categories')->insert($rowsCatArt);
+            $db->table('b_article_category')->insert($rowsCatArt);
         }
 
 

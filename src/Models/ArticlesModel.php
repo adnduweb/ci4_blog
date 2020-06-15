@@ -11,6 +11,7 @@ namespace Adnduweb\Ci4_blog\Models;
 
 use CodeIgniter\Model;
 use Adnduweb\Ci4_blog\Entities\Article;
+use Faker\Generator;
 
 /**
  * Class ArticleModel
@@ -22,21 +23,21 @@ class ArticlesModel extends Model
     /**
      * @var \CodeIgniter\Database\BaseBuilder
      */
-    private $article_table;
+    private $b_article_table;
 
     use \Tatter\Relations\Traits\ModelTrait;
     use \Adnduweb\Ci4_logs\Traits\AuditsTrait;
     protected $afterInsert        = ['auditInsert'];
     protected $afterUpdate        = ['auditUpdate'];
     protected $afterDelete        = ['auditDelete'];
-    protected $table              = 'articles';
-    protected $tableLang          = 'articles_langs';
-    protected $with               = ['articles_langs'];
+    protected $table              = 'b_article';
+    protected $tableLang          = 'b_article_lang';
+    protected $with               = ['b_article_lang'];
     protected $without            = [];
     protected $primaryKey         = 'id_article';
     protected $returnType         = Article::class;
     protected $useSoftDeletes     = false;
-    protected $allowedFields      = ['id_categorie_default', 'author_created', 'author_created', 'active', 'important', 'picture_one', 'picture_header', 'no_follow_no_index', 'order', 'type'];
+    protected $allowedFields      = ['id_category_default', 'author_created', 'author_created', 'active', 'important', 'picture_one', 'picture_header', 'no_follow_no_index', 'order', 'type'];
     protected $useTimestamps      = true;
     protected $validationMessages = [];
     protected $skipValidation     = false;
@@ -51,79 +52,124 @@ class ArticlesModel extends Model
     public function __construct(...$params)
     {
         parent::__construct();
-        $this->article_table     = $this->db->table('articles');
-        $this->articles_langs    = $this->db->table('articles_langs');
-        $this->article_categorie = $this->db->table('articles_categories');
-        $this->categories        = $this->db->table('categories');
-        $this->categories_langs  = $this->db->table('categories_langs');
+        $this->b_article_table          = $this->db->table('b_article');
+        $this->b_article_table_lang     = $this->db->table('b_article_lang');
+        $this->b_article_table_category = $this->db->table('b_article_category');
+        $this->b_category_table         = $this->db->table('b_category');
+        $this->b_category_table_lang    = $this->db->table('b_category_lang');
+    }
+
+    public function fake(Generator &$faker)
+    {
+        return [
+            'id_category_default' => 1,
+            'author_created' => 1,
+            'author_created' => 1,
+            'active' => 1,
+            'important' => 1,
+            'picture_one' => null,
+            'picture_header' => null,
+            'no_follow_no_index' => 0,
+            'order' => 1,
+            'type' => 1,
+            'created_at' => date('Y-m-d H:i:s'),
+        ];
+    }
+
+    public function fakelang(int $id_article)
+    {
+        $faker = \Faker\Factory::create();
+        // print_r($faker);
+        // exit;
+        $data = [
+            'id_article'      => $id_article,
+            'id_lang'           => 1,
+            'name'              => $faker->word(1),
+            'sous_name'         => $faker->word(3),
+            'description_short' => $faker->paragraph(1),
+            'description'       => $faker->text,
+            'meta_title'        => $faker->word(10),
+            'meta_description'  => $faker->word(10),
+            'tags'              => $faker->word(1),
+            'slug'              => uniforme(trim($faker->word(2))),
+        ];
+        // Create the new participant
+        $this->b_article_table_lang->insert($data);
+
+        $dataCat = [
+            'id_article'   =>  $id_article,
+            'id_category' => 1,
+            'created_at' => date('Y-m-d H:i:s'),
+        ];
+        $this->b_article_table_category->insert($dataCat);
     }
 
     public function getAllList(int $page, int $perpage, array $sort, array $query)
     {
-        $this->article_table->select();
-        $this->article_table->select('created_at as date_create_at');
-        $this->article_table->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.id_article');
+        $this->b_article_table->select();
+        $this->b_article_table->select('created_at as date_create_at');
+        $this->b_article_table->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.id_article');
         if (isset($query[0]) && is_array($query)) {
-            $this->article_table->where('deleted_at IS NULL AND (name LIKE "%' . $query[0] . '%" OR description_short LIKE "%' . $query[0] . '%") AND id_lang = ' . service('settings')->setting_id_lang);
-            $this->article_table->limit(0, $page);
+            $this->b_article_table->where('deleted_at IS NULL AND (name LIKE "%' . $query[0] . '%" OR description_short LIKE "%' . $query[0] . '%") AND id_lang = ' . service('settings')->setting_id_lang);
+            $this->b_article_table->limit(0, $page);
         } else {
-            $this->article_table->where('deleted_at IS NULL AND id_lang = ' . service('settings')->setting_id_lang);
+            $this->b_article_table->where('deleted_at IS NULL AND id_lang = ' . service('settings')->setting_id_lang);
             $page = ($page == '1') ? '0' : (($page - 1) * $perpage);
-            $this->article_table->limit($perpage, $page);
+            $this->b_article_table->limit($perpage, $page);
         }
 
-        $this->article_table->orderBy($sort['field'] . ' ' . $sort['sort']);
-        $articlesResult = $this->article_table->get()->getResult();
+        $this->b_article_table->orderBy($sort['field'] . ' ' . $sort['sort']);
+        $b_articleResult = $this->b_article_table->get()->getResult();
 
-        // In va chercher les categories
-        if (!empty($articlesResult)) {
+        // In va chercher les b_category_table
+        if (!empty($b_articleResult)) {
             $i = 0;
-            foreach ($articlesResult as $article) {
-                $articlesResult[$i]->categories = $this->getCatByArt($article->id_article);
+            foreach ($b_articleResult as $article) {
+                $b_articleResult[$i]->b_category_table = $this->getCatByArt($article->id_article);
                 $i++;
             }
         }
 
-        //echo $this->article_table->getCompiledSelect(); exit;
-        return $articlesResult;
+        //echo $this->b_article_table->getCompiledSelect(); exit;
+        return $b_articleResult;
     }
 
     public function getAllCount(array $sort, array $query)
     {
-        $this->article_table->select($this->table . '.' . $this->primaryKey);
-        $this->article_table->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.id_article');
+        $this->b_article_table->select($this->table . '.' . $this->primaryKey);
+        $this->b_article_table->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.id_article');
         if (isset($query[0]) && is_array($query)) {
-            $this->article_table->where('deleted_at IS NULL AND (name LIKE "%' . $query[0] . '%" OR description_short LIKE "%' . $query[0] . '%") AND id_lang = ' . service('settings')->setting_id_lang);
+            $this->b_article_table->where('deleted_at IS NULL AND (name LIKE "%' . $query[0] . '%" OR description_short LIKE "%' . $query[0] . '%") AND id_lang = ' . service('settings')->setting_id_lang);
         } else {
-            $this->article_table->where('deleted_at IS NULL AND id_lang = ' . service('settings')->setting_id_lang);
+            $this->b_article_table->where('deleted_at IS NULL AND id_lang = ' . service('settings')->setting_id_lang);
         }
 
-        $this->article_table->orderBy($sort['field'] . ' ' . $sort['sort']);
+        $this->b_article_table->orderBy($sort['field'] . ' ' . $sort['sort']);
 
-        $pages = $this->article_table->get();
-        //echo $this->article_table->getCompiledSelect(); exit;
+        $pages = $this->b_article_table->get();
+        //echo $this->b_article_table->getCompiledSelect(); exit;
         return $pages->getResult();
     }
 
     public function getCatArt(int $id_article): array
     {
-        $this->article_categorie->select();
-        $this->article_categorie->where('id_article', $id_article);
-        return $this->article_categorie->get()->getResult();
+        $this->b_article_table_category->select();
+        $this->b_article_table_category->where('id_article', $id_article);
+        return $this->b_article_table_category->get()->getResult();
     }
 
     public function getCatByArt($id_article = null): array
     {
-        $this->article_categorie->select();
-        //$this->article_categorie->join('categories_langs', 'articles_categories.id_categorie = categories_langs.id_categorie');
-        $this->article_categorie->where(['id_article' => $id_article]);
-        $article_categorie =  $this->article_categorie->get()->getResult();
+        $this->b_article_table_category->select();
+        //$this->b_article_table_category->join('b_category_table_lang', 'b_article_table_category.id_category = b_category_table_lang.id_category');
+        $this->b_article_table_category->where(['id_article' => $id_article]);
+        $b_article_table_category =  $this->b_article_table_category->get()->getResult();
         $temp = [];
-        if (!empty($article_categorie)) {
+        if (!empty($b_article_table_category)) {
             $i = 0;
-            foreach ($article_categorie as $art) {
-                $temp[$art->id_categorie] = $art;
-                $temp[$art->id_categorie]->name = $this->categories_langs->where(['id_categorie' => $art->id_categorie, 'id_lang' => service('settings')->setting_id_lang])->get()->getRow()->name;
+            foreach ($b_article_table_category as $art) {
+                $temp[$art->id_category] = $art;
+                $temp[$art->id_category]->name = $this->b_category_table_lang->where(['id_category' => $art->id_category, 'id_lang' => service('settings')->setting_id_lang])->get()->getRow()->name;
                 $i++;
             }
         }
@@ -132,47 +178,61 @@ class ArticlesModel extends Model
 
     public function getIdArticleBySlug($slug)
     {
-        $this->article_table->select($this->table . '.' . $this->primaryKey . ', active, type');
-        $this->article_table->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.id_article');
-        $this->article_table->where('deleted_at IS NULL AND ' . $this->tableLang . '.slug="' . $slug . '"');
-        $article_table = $this->article_table->get()->getRow();
-        // echo $this->article_table->getCompiledSelect();
+        $this->b_article_table->select($this->table . '.' . $this->primaryKey . ', active, type');
+        $this->b_article_table->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.id_article');
+        $this->b_article_table->where('deleted_at IS NULL AND ' . $this->tableLang . '.slug="' . $slug . '"');
+        $b_article_table = $this->b_article_table->get()->getRow();
+        // echo $this->b_article_table->getCompiledSelect();
         // exit;
-        if (!empty($article_table)) {
-            if ($article_table->active == '1')
-                return $article_table;
+        if (!empty($b_article_table)) {
+            if ($b_article_table->active == '1')
+                return $b_article_table;
         }
         return false;
     }
 
     public function getLast(int $id_lang)
     {
-        $this->article_table->select();
-        $this->article_table->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.id_article');
-        $this->article_table->where('deleted_at IS NULL AND ' . $this->tableLang . '.id_lang="' . $id_lang . '"');
-        $this->article_table->limit(1);
-        $this->article_table->orderBy($this->table . '.id_article ASC ');
-        $article_table = $this->article_table->get()->getRow();
-        return $article_table;
+        $this->b_article_table->select();
+        $this->b_article_table->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.id_article');
+        $this->b_article_table->where('deleted_at IS NULL AND ' . $this->tableLang . '.id_lang="' . $id_lang . '"');
+        $this->b_article_table->limit(1);
+        $this->b_article_table->orderBy($this->table . '.id_article ASC ');
+        $b_article_table = $this->b_article_table->get()->getRow();
+        return $b_article_table;
     }
 
 
     public function getLink(int $id_article, int $id_lang)
     {
-        $this->article_table->select('slug');
-        $this->article_table->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.id_article');
-        $this->article_table->where([$this->table . '.id_article' => $id_article, 'id_lang' => $id_lang]);
-        $article_table = $this->article_table->get()->getRow();
-        return $article_table;
+        $this->b_article_table->select('slug');
+        $this->b_article_table->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.id_article');
+        $this->b_article_table->where([$this->table . '.id_article' => $id_article, 'id_lang' => $id_lang]);
+        $b_article_table = $this->b_article_table->get()->getRow();
+        return $b_article_table;
+    }
+
+    public function getArticlesByIdCategory(int $id_category, int $id_lang)
+    {
+        $this->b_article_table->select();
+        $this->b_article_table->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.id_article');
+        $this->b_article_table->where([$this->table . '.id_category_default' => $id_category, 'id_lang' => $id_lang, 'type' => 1]);
+        $b_article_table = $this->b_article_table->get()->getResult();
+        if (!empty($b_article_table)) {
+            foreach ($b_article_table as &$article) {
+                $article = new Article((array) $article);
+            }
+        }
+        return $b_article_table;
     }
 
     public function dupliquer(int $id_article)
     {
 
         //Article
-        $this->article_table->select();
-        $this->article_table->where(['id_article' => $id_article]);
-        $getArticle = $this->article_table->get()->getRow();
+        $this->b_article_table->select();
+        $this->b_article_table->where(['id_article' => $id_article]);
+        $getArticle = $this->b_article_table->get()->getRow();
 
         unset($getArticle->id_article);
         $getArticle->type = 4;
@@ -181,14 +241,14 @@ class ArticlesModel extends Model
         $id_articleNew = $this->insertID();
 
         // On enregistre les langues
-        $this->articles_langs->select();
-        $this->articles_langs->where(['id_article' => $id_article]);
-        $getArticleLangs = $this->articles_langs->get()->getRow();
+        $this->b_article_table_lang->select();
+        $this->b_article_table_lang->where(['id_article' => $id_article]);
+        $getArticleLangs = $this->b_article_table_lang->get()->getRow();
         $getArticleLangs->id_article = $id_articleNew;
-        $this->articles_langs->insert((array) $getArticleLangs);
+        $this->b_article_table_lang->insert((array) $getArticleLangs);
 
-        // On enregistre les categories par default
-        $this->article_categorie->insert(['id_article' => $id_articleNew, 'id_categorie' => $getArticle->id_categorie_default]);
+        // On enregistre les b_category_table par default
+        $this->b_article_table_category->insert(['id_article' => $id_articleNew, 'id_category' => $getArticle->id_category_default]);
 
 
         // exit;
@@ -202,10 +262,10 @@ class ArticlesModel extends Model
      */
     public function GetArticle(string $column, string $data)
     {
-        $this->article_table->select("*, DATE_FORMAT(`created_at`,'Le %d-%m-%Y &agrave; %H:%i:%s') AS `created_at`, DATE_FORMAT(`updated_at`,'Le %d-%m-%Y &agrave; %H:%i:%s') AS `updated_at`");
-        $this->article_table->where($column, $data);
+        $this->b_article_table->select("*, DATE_FORMAT(`created_at`,'Le %d-%m-%Y &agrave; %H:%i:%s') AS `created_at`, DATE_FORMAT(`updated_at`,'Le %d-%m-%Y &agrave; %H:%i:%s') AS `updated_at`");
+        $this->b_article_table->where($column, $data);
 
-        return $this->article_table->get()->getRow();
+        return $this->b_article_table->get()->getRow();
     }
 
     /**
@@ -213,11 +273,11 @@ class ArticlesModel extends Model
      */
     public function lastFive(): array
     {
-        $this->article_table->select("*, DATE_FORMAT(`created_at`,'<strong>%d-%m-%Y</strong> &agrave; <strong>%H:%i:%s</strong>') AS `created_at`, DATE_FORMAT(`updated_at`,'<strong>%d-%m-%Y</strong> &agrave; <strong>%H:%i:%s</strong>') AS `updated_at`");
-        $this->article_table->limit('5');
-        $this->article_table->orderBy('id_article', 'DESC');
+        $this->b_article_table->select("*, DATE_FORMAT(`created_at`,'<strong>%d-%m-%Y</strong> &agrave; <strong>%H:%i:%s</strong>') AS `created_at`, DATE_FORMAT(`updated_at`,'<strong>%d-%m-%Y</strong> &agrave; <strong>%H:%i:%s</strong>') AS `updated_at`");
+        $this->b_article_table->limit('5');
+        $this->b_article_table->orderBy('id_article', 'DESC');
 
-        return $this->article_table->get()->getResult();
+        return $this->b_article_table->get()->getResult();
     }
 
     /**
@@ -225,10 +285,10 @@ class ArticlesModel extends Model
      */
     public function count_publied(): int
     {
-        $this->article_table->select('COUNT(id_article) as id_article');
-        $this->article_table->where('published', 1);
+        $this->b_article_table->select('COUNT(id_article) as id_article');
+        $this->b_article_table->where('published', 1);
 
-        return $this->article_table->get()->getRow()->id_article;
+        return $this->b_article_table->get()->getRow()->id_article;
     }
 
     /**
@@ -236,12 +296,12 @@ class ArticlesModel extends Model
      */
     public function count_attCorrect(): int
     {
-        $this->article_table->select('COUNT(id_article) as id_article');
-        $this->article_table->where('corriged', 0);
-        $this->article_table->where('published', 0);
-        $this->article_table->where('brouillon', 0);
+        $this->b_article_table->select('COUNT(id_article) as id_article');
+        $this->b_article_table->where('corriged', 0);
+        $this->b_article_table->where('published', 0);
+        $this->b_article_table->where('brouillon', 0);
 
-        return $this->article_table->get()->getRow()->id_article;
+        return $this->b_article_table->get()->getRow()->id_article;
     }
 
     /**
@@ -249,11 +309,11 @@ class ArticlesModel extends Model
      */
     public function count_attPublished(): int
     {
-        $this->article_table->select('COUNT(id_article) as id_article');
-        $this->article_table->where('corriged', 1);
-        $this->article_table->where('published', 0);
+        $this->b_article_table->select('COUNT(id_article) as id_article');
+        $this->b_article_table->where('corriged', 1);
+        $this->b_article_table->where('published', 0);
 
-        return $this->article_table->get()->getRow()->id_article;
+        return $this->b_article_table->get()->getRow()->id_article;
     }
 
     /**
@@ -261,10 +321,10 @@ class ArticlesModel extends Model
      */
     public function count_brouillon(): int
     {
-        $this->article_table->select('COUNT(id_article) as id_article');
-        $this->article_table->where('brouillon', 1);
+        $this->b_article_table->select('COUNT(id_article) as id_article');
+        $this->b_article_table->where('brouillon', 1);
 
-        return $this->article_table->get()->getRow()->id_article;
+        return $this->b_article_table->get()->getRow()->id_article;
     }
 
     /**
@@ -272,13 +332,13 @@ class ArticlesModel extends Model
      * @param string $link
      * @param string $content
      * @param string $tags
-     * @param string $categories
+     * @param string $b_category_table
      * @param string $pic
      * @param int $important
      *
      * @return int (Return id)
      */
-    public function Add(string $title, string $link, string $content, string $tags, string $categories, string $pic, int $important): int
+    public function Add(string $title, string $link, string $content, string $tags, string $b_category_table, string $pic, int $important): int
     {
         $data = [
             'title'          => $title,
@@ -287,10 +347,10 @@ class ArticlesModel extends Model
             'important'      => $important,
             'link'           => $link,
             'picture_one'    => $pic,
-            'categories'     => $categories,
+            'b_category_table'     => $b_category_table,
             'tags'           => $tags
         ];
-        $this->article_table->insert($data);
+        $this->b_article_table->insert($data);
 
         return $this->db->insertID();
     }
@@ -301,14 +361,14 @@ class ArticlesModel extends Model
      * @param string $link
      * @param string $content
      * @param string $tags
-     * @param string $categories
+     * @param string $b_category_table
      * @param string $pic
      * @param int $important
      * @param int $type
      *
      * @return bool
      */
-    public function Edit(int $id, string $title, string $link, string $content, string $tags, string $categories, string $pic, int $important, int $type): bool
+    public function Edit(int $id, string $title, string $link, string $content, string $tags, string $b_category_table, string $pic, int $important, int $type): bool
     {
         $data = [
             'title'          => $title,
@@ -318,7 +378,7 @@ class ArticlesModel extends Model
             'important'      => $important,
             'link'           => $link,
             'picture_one'    => $pic,
-            'categories'     => $categories,
+            'b_category_table'     => $b_category_table,
             'tags'           => $tagsy
         ];
 
@@ -335,9 +395,9 @@ class ArticlesModel extends Model
             $data['brouillon'] = 0;
         }
 
-        $this->article_table->where('id_article', $id);
-        $this->article_table->set('updated_at', 'NOW()', false);
-        $this->article_table->update($data);
+        $this->b_article_table->where('id_article', $id);
+        $this->b_article_table->set('updated_at', 'NOW()', false);
+        $this->b_article_table->update($data);
 
         return true;
     }
@@ -349,21 +409,21 @@ class ArticlesModel extends Model
      */
     public function getArticleListAdmin(int $type)
     {
-        $this->article_table->select("*, DATE_FORMAT(`created_at`,'<strong>%d-%m-%Y</strong> &agrave; <strong>%H:%i:%s</strong>') AS `created_at`, DATE_FORMAT(`updated_at`,'<strong>%d-%m-%Y</strong> &agrave; <strong>%H:%i:%s</strong>') AS `updated_at`");
+        $this->b_article_table->select("*, DATE_FORMAT(`created_at`,'<strong>%d-%m-%Y</strong> &agrave; <strong>%H:%i:%s</strong>') AS `created_at`, DATE_FORMAT(`updated_at`,'<strong>%d-%m-%Y</strong> &agrave; <strong>%H:%i:%s</strong>') AS `updated_at`");
 
         if ($type == 1) {
-            $this->article_table->where('published', 1);
+            $this->b_article_table->where('published', 1);
         } elseif ($type == 2) {
-            $this->article_table->where('corriged', 0);
-            $this->article_table->where('published', 0);
-            $this->article_table->where('brouillon', 0);
+            $this->b_article_table->where('corriged', 0);
+            $this->b_article_table->where('published', 0);
+            $this->b_article_table->where('brouillon', 0);
         } elseif ($type == 3) {
-            $this->article_table->where('corriged', 1);
-            $this->article_table->where('published', 0);
+            $this->b_article_table->where('corriged', 1);
+            $this->b_article_table->where('published', 0);
         } elseif ($type == 4) {
-            $this->article_table->where('brouillon', 1);
+            $this->b_article_table->where('brouillon', 1);
         }
 
-        return $this->article_table->get()->getResult();
+        return $this->b_article_table->get()->getResult();
     }
 }

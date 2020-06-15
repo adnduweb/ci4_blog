@@ -7,9 +7,10 @@ use CodeIgniter\Entity;
 class Categorie extends Entity
 {
     use \Tatter\Relations\Traits\EntityTrait;
-    protected $table      = 'categories';
-    protected $tableLang  = 'categories_langs';
-    protected $primaryKey = 'id_categorie';
+    use \App\Traits\BuilderEntityTrait;
+    protected $table      = 'b_category';
+    protected $tableLang  = 'b_category_lang';
+    protected $primaryKey = 'id_category';
 
     protected $datamap = [];
     /**
@@ -24,8 +25,14 @@ class Categorie extends Entity
 
     public function getId()
     {
-        return $this->id_categorie ?? null;
+        return $this->id_category ?? null;
     }
+
+    public function getClassEntities()
+    {
+        return $this->table;
+    }
+
     public function getName()
     {
         return $this->attributes['name'] ?? null;
@@ -37,35 +44,35 @@ class Categorie extends Entity
 
     public function getNameLang(int $id_lang)
     {
-        foreach ($this->categories_langs as $lang) {
+        foreach ($this->b_category_lang as $lang) {
             if ($id_lang == $lang->id_lang) {
                 return $lang->name ?? null;
             }
         }
     }
 
-    public function getDescription(int $id_lang)
+    public function getDescription()
     {
-        foreach ($this->categories_langs as $lang) {
-            if ($id_lang == $lang->id_lang) {
+        foreach ($this->b_category_lang as $lang) {
+            if (service('switchlanguage')->getIdLocale() == $lang->id_lang) {
                 return $lang->description ?? null;
             }
         }
     }
 
-    public function get_MetaDescription(int $id_lang)
+    public function get_MetaDescription()
     {
-        foreach ($this->categories_langs as $lang) {
-            if ($id_lang == $lang->id_lang) {
+        foreach ($this->b_category_lang as $lang) {
+            if (service('switchlanguage')->getIdLocale() == $lang->id_lang) {
                 return $lang->metat_description ?? null;
             }
         }
     }
 
-    public function get_MetaTitle(int $id_lang)
+    public function get_MetaTitle()
     {
-        foreach ($this->categories_langs as $lang) {
-            if ($id_lang == $lang->id_lang) {
+        foreach ($this->b_category_lang as $lang) {
+            if (service('switchlanguage')->getIdLocale() == $lang->id_lang) {
                 return $lang->meta_title ?? null;
             }
         }
@@ -75,8 +82,8 @@ class Categorie extends Entity
     public function _prepareLang()
     {
         $lang = [];
-        if (!empty($this->id_categorie)) {
-            foreach ($this->categories_langs as $tabs_lang) {
+        if (!empty($this->id_category)) {
+            foreach ($this->b_category_lang as $tabs_lang) {
                 $lang[$tabs_lang->id_lang] = $tabs_lang;
             }
         }
@@ -88,26 +95,30 @@ class Categorie extends Entity
         $db      = \Config\Database::connect();
         $builder = $db->table($this->tableLang);
         foreach ($data as $k => $v) {
-            $this->tableLang =  $builder->where(['id_lang' => $k, 'id_categorie' => $key])->get()->getRow();
+            $this->tableLang =  $builder->where(['id_lang' => $k, 'id_category' => $key])->get()->getRow();
             if (empty($this->tableLang)) {
                 $data = [
-                    'id_categorie'      => $key,
+                    'id_category'      => $key,
                     'id_lang'           => $k,
                     'name'              => $v['name'],
                     'description_short' => $v['description_short'],
+                    'meta_title' => $v['meta_title'],
+                    'meta_description' => $v['meta_description'],
                     'slug' => strtolower(preg_replace('/[^a-zA-Z0-9\-]/', '', preg_replace('/\s+/', '-', trim($v['slug']))))
                 ];
                 $builder->insert($data);
             } else {
                 $data = [
-                    'id_categorie' => $this->tableLang->id_categorie,
+                    'id_category' => $this->tableLang->id_category,
                     'id_lang'      => $this->tableLang->id_lang,
                     'name'              => $v['name'],
                     'description_short' => $v['description_short'],
+                    'meta_title' => $v['meta_title'],
+                    'meta_description' => $v['meta_description'],
                     'slug' => strtolower(preg_replace('/[^a-zA-Z0-9\-]/', '', preg_replace('/\s+/', '-', trim($v['slug']))))
                 ];
                 $builder->set($data);
-                $builder->where(['id_categorie' => $this->tableLang->id_categorie, 'id_lang' => $this->tableLang->id_lang]);
+                $builder->where(['id_category' => $this->tableLang->id_category, 'id_lang' => $this->tableLang->id_lang]);
                 $builder->update();
             }
         }

@@ -87,7 +87,7 @@ class AdminCategorieController extends AdminController
         if (is_null($id)) {
             $this->data['form'] = new Categorie($this->request->getPost());
         } else {
-            $this->data['form'] = $this->tableModel->where('id_categorie', $id)->first();
+            $this->data['form'] = $this->tableModel->where('id_category', $id)->first();
             if (empty($this->data['form'])) {
                 Tools::set_message('danger', lang('Core.not_{0}_exist', [$this->item]), lang('Core.warning_error'));
                 return redirect()->to('/' . env('CI_SITE_AREA') . '/' . user()->id_company . '/public/blog/categories');
@@ -97,7 +97,7 @@ class AdminCategorieController extends AdminController
         $this->data['form']->allCategories = $this->tableModel->getAllCategoriesOptionParent();
         $this->data['form']->id_module = $this->idModule;
         $this->data['form']->id_item = $id;
-        $this->data['form']->categories = $this->tableModel->join('categories_langs', 'categories.id_categorie = categories_langs.id_categorie')->where('id_lang', 1)->orderBy('name', 'ACS')->get()->getResult();
+        $this->data['form']->categories = $this->tableModel->join('b_category_lang', 'b_category.id_category = b_category_lang.id_category')->where('id_lang', 1)->orderBy('name', 'ACS')->get()->getResult();
         //print_r($this->data['form']); exit;
 
         parent::renderForm($id);
@@ -117,7 +117,7 @@ class AdminCategorieController extends AdminController
             Tools::set_message('danger', $this->tableModel->errors(), lang('Core.warning_error'));
             return redirect()->back()->withInput();
         }
-        $categorieBase->saveLang($this->lang, $categorieBase->id_categorie);
+        $categorieBase->saveLang($this->lang, $categorieBase->id_category);
 
         // Success!
         Tools::set_message('success', lang('Core.save_data'), lang('Core.cool_success'));
@@ -125,7 +125,7 @@ class AdminCategorieController extends AdminController
             'url'                   => '/' . env('CI_SITE_AREA') . '/' . user()->id_company . '/public/blog/categories',
             'action'                => 'edit',
             'submithandler'         => $this->request->getPost('submithandler'),
-            'id'                    => $categorieBase->id_categorie,
+            'id'                    => $categorieBase->id_category,
         ];
         $this->redirectAfterForm($redirectAfterForm);
     }
@@ -140,8 +140,8 @@ class AdminCategorieController extends AdminController
             Tools::set_message('danger', $this->tableModel->errors(), lang('Core.warning_error'));
             return redirect()->back()->withInput();
         }
-        $id_categorie = $this->tableModel->insertID();
-        $categorieBase->saveLang($this->lang, $id_categorie);
+        $id_category = $this->tableModel->insertID();
+        $categorieBase->saveLang($this->lang, $id_category);
 
         // Success!
         Tools::set_message('success', lang('Core.save_data'), lang('Core.cool_success'));
@@ -149,7 +149,7 @@ class AdminCategorieController extends AdminController
             'url'                   => '/' . env('CI_SITE_AREA') . '/' . user()->id_company . '/public/blog/categories',
             'action'                => 'add',
             'submithandler'         => $this->request->getPost('submithandler'),
-            'id'                    => $id_categorie,
+            'id'                    => $id_category,
         ];
         $this->redirectAfterForm($redirectAfterForm);
     }
@@ -162,12 +162,12 @@ class AdminCategorieController extends AdminController
                 foreach ($value['selected'] as $selected) {
 
                     $data[] = [
-                        'id_categorie' => $selected,
+                        'id_category' => $selected,
                         'active'       => $value['active'],
                     ];
                 }
             }
-            if ($this->tableModel->updateBatch($data, 'id_categorie')) {
+            if ($this->tableModel->updateBatch($data, 'id_category')) {
                 return $this->respond(['status' => true, 'type' => 'success', 'message' => lang('Js.your_seleted_records_statuses_have_been_updated')], 200);
             } else {
                 return $this->respond(['status' => false, 'database' => true, 'display' => 'modal', 'message' => lang('Js.aucun_enregistrement_effectue')], 200);
