@@ -5,12 +5,12 @@ namespace Adnduweb\Ci4_blog\Controllers\Admin;
 use App\Controllers\Admin\AdminController;
 use App\Libraries\AssetsBO;
 use App\Libraries\Tools;
-use App\Models\LanguagesModel;
+use App\Models\LanguageModel;
 use App\Models\SettingModel;
 use CodeIgniter\API\ResponseTrait;
 use Adnduweb\Ci4_blog\Entities\Article;
-use Adnduweb\Ci4_blog\Models\ArticlesModel;
-use Adnduweb\Ci4_blog\Models\CategoriesModel;
+use Adnduweb\Ci4_blog\Models\PostModel;
+use Adnduweb\Ci4_blog\Models\CategoryModel;
 
 class AdminBlogSettingsController extends AdminController
 {
@@ -64,7 +64,7 @@ class AdminBlogSettingsController extends AdminController
 
         // Success!
         Tools::set_message('success', lang('Core.save_data'), lang('Core.cool_success'));
-        return redirect()->to('/' . CI_SITE_AREA . '/' . user()->id_company . $this->pathcontroller);
+        return redirect()->to('/' . CI_SITE_AREA . '/' . user()->company_id . $this->pathcontroller);
     }
 
 }

@@ -1,4 +1,4 @@
-<?php $categoriesModel = new Adnduweb\Ci4_blog\Models\CategoriesModel(); ?>
+<?php $categoryModel = new Adnduweb\Ci4_blog\Models\CategoryModel(); ?>
 <?php $field = isset($builder->id_field) ? $builder->id_field : "__field__"; ?>
 <?php $optionsActus = isset($builder->id_field) ? json_decode($builder->options) : ""; ?>
 <?php $settingsActus = isset($builder->id_field) ? json_decode($builder->settings) : ""; ?>
@@ -12,7 +12,7 @@
         <div class="kt-portlet__head-toolbar">
             <div class="kt-portlet__head-group">
                 <a href="javascript:;" data-ktportlet-tool="toggle" data-field="<?= $field; ?>" class="btn btn-sm btn-icon btn-brand btn-icon-md"><i class="la la-angle-down"></i></a>
-                <a href="javascript:;" data-ktportlet-tool="remove" data-id_builder="<?= isset($builder->id_builder) ? $builder->id_builder : ""; ?>" data-field="<?= $field; ?>" class="btn btn-sm btn-icon btn-warning removePortlet btn-icon-md"><i class="la la-close"></i></a>
+                <a href="javascript:;" data-ktportlet-tool="remove" data-id_builder="<?= isset($builder->id) ? $builder->id : ""; ?>" data-field="<?= $field; ?>" class="btn btn-sm btn-icon btn-warning removePortlet btn-icon-md"><i class="la la-close"></i></a>
             </div>
         </div>
     </div>
@@ -32,8 +32,8 @@
                         <label><?= lang('Core.by_cat'); ?></label>
                         <select required name="builder[<?= $field; ?>][options][cat]" class="form-control" title="<?= ucfirst(lang('Core.choose_one_of_the_following')); ?>" id="options_cat">
                             <option <?= (isset($optionsActus->orderBy) && $optionsActus->orderBy == 'all') ? 'selected' : ""; ?> value="all">Toutes</option>
-                            <?php foreach ($categoriesModel->getAllCat() as $cat) { ?>
-                                <option <?= (isset($optionsActus->cat) && $optionsActus->cat == $cat->id_category) ? 'selected' : ""; ?> value="<?= $cat->id_category; ?>"><?= $cat->name; ?></option>
+                            <?php foreach ($categoryModel->getAllCat() as $cat) { ?>
+                                <option <?= (isset($optionsActus->cat) && $optionsActus->cat == $cat->id) ? 'selected' : ""; ?> value="<?= $cat->id; ?>"><?= $cat->name; ?></option>
                             <?php } ?>
 
                         </select>
@@ -59,13 +59,13 @@
                 <div class="col-md-12">
                     <div class="form-group">
                         <label><?= lang('Core.class_css'); ?></label>
-                        <input type="text" name="builder[<?= $field; ?>][class]" class="form-control form_input_label" value="<?= isset($builder->class) ? $builder->class : ""; ?>" data-field="<?= $field; ?>" placeholder="Votre class" />
+                        <input type="text" name="builder[<?= $field; ?>][balise_class]" class="form-control form_input_label" value="<?= isset($builder->clbalise_classass) ? $builder->balise_class : ""; ?>" data-field="<?= $field; ?>" placeholder="Votre class" />
                     </div>
                 </div>
                 <div class="col-md-12">
                     <div class="form-group">
                         <label><?= lang('Core.id_css'); ?></label>
-                        <input type="text" name="builder[<?= $field; ?>][id]" data-field="<?= $field; ?>" class="form-control form_input_placeholder" value="<?= isset($builder->id) ? $builder->id : ""; ?>" placeholder="Votre id" />
+                        <input type="text" name="builder[<?= $field; ?>][balise_id]" data-field="<?= $field; ?>" class="form-control form_input_placeholder" value="<?= isset($builder->balise_id) ? $builder->balise_id : ""; ?>" placeholder="Votre id" />
                     </div>
                 </div>
 
@@ -99,7 +99,7 @@
                     </div>
                 </div>
                 <?php if ($field != "__field__") { ?>
-                    <?= form_hidden('builder[' . $field . '][id_builder]', $builder->id_builder); ?>
+                    <?= form_hidden('builder[' . $field . '][id]', $builder->id); ?>
                 <?php } ?>
                 <?= form_hidden('builder[' . $field . '][type]', 'actufield'); ?>
                 <?= form_hidden('builder[' . $field . '][id_field]', $field); ?>

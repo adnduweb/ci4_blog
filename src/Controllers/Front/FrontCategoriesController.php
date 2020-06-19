@@ -4,12 +4,12 @@ namespace Adnduweb\Ci4_blog\Controllers\Front;
 
 use CodeIgniter\API\ResponseTrait;
 use Adnduweb\Ci4_blog\Entities\Article;
-use Adnduweb\Ci4_blog\Models\ArticlesModel;
-use Adnduweb\Ci4_blog\Models\CategoriesModel;
+use Adnduweb\Ci4_blog\Models\PostModel;
+use Adnduweb\Ci4_blog\Models\CategoryModel;
 
 class FrontCategoriesController extends \App\Controllers\Front\FrontController
 {
-    use \App\Traits\BuilderTrait;
+    use \App\Traits\BuilderModelTrait;
     use \App\Traits\ModuleTrait;
 
     public $name_module = 'blog';
@@ -18,8 +18,8 @@ class FrontCategoriesController extends \App\Controllers\Front\FrontController
     public function __construct()
     {
         parent::__construct();
-        $this->tableModel  = new CategoriesModel();
-        $this->tableArticleModel  = new ArticlesModel();
+        $this->tableModel  = new CategoryModel();
+        $this->tableArticleModel  = new PostModel();
         $this->idModule  = $this->getIdModule();
     }
     public function index()

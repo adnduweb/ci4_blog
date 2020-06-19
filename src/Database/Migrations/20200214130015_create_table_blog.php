@@ -9,37 +9,34 @@ class Migration_create_table_blog extends Migration
     public function up()
     {
 
-        /* b_ARTICLE */
+        /* b_posts */
         $fields = [
-            'id_article'           => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
+            'id'                  => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
             'id_category_default' => ['type' => 'INT', 'constraint' => 11],
-            'author_created'       => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true],
-            'author_update'        => ['type' => 'INT', 'constraint' => 11],
-            'active'               => ['type' => 'INT', 'constraint' => 11],
-            'important'            => ['type' => 'INT', 'constraint' => 11, 'default' => 0],
-            'picture_one'          => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
-            'picture_header'       => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
-            'no_follow_no_index'   => ['type' => 'INT', 'constraint' => 11, 'default' => 0],
-            'type'                 => ['type' => 'INT', 'constraint' => 11, 'default' => 4],
-            'order'                => ['type' => 'INT', 'constraint' => 11, 'default' => 0],
-            'created_at'           => ['type' => 'DATETIME', 'null' => true],
-            'updated_at'           => ['type' => 'DATETIME', 'null' => true],
-            'deleted_at'           => ['type' => 'DATETIME', 'null' => true],
+            'user_id'             => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true],
+            'user_updated'       => ['type' => 'INT', 'constraint' => 11],
+            'active'              => ['type' => 'INT', 'constraint' => 11],
+            'important'           => ['type' => 'INT', 'constraint' => 11, 'default' => 0],
+            'picture_one'         => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
+            'picture_header'      => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
+            'no_follow_no_index'  => ['type' => 'INT', 'constraint' => 11, 'default' => 0],
+            'type'                => ['type' => 'INT', 'constraint' => 11, 'default' => 4],
+            'order'               => ['type' => 'INT', 'constraint' => 11, 'default' => 0],
+            'created_at'          => ['type' => 'DATETIME', 'null' => true],
+            'updated_at'          => ['type' => 'DATETIME', 'null' => true],
+            'deleted_at'          => ['type' => 'DATETIME', 'null' => true],
         ];
 
+        $this->forge->addKey('id', true);
         $this->forge->addField($fields);
-        $this->forge->addKey('id_article', true);
-        $this->forge->addKey('created_at');
-        $this->forge->addKey('updated_at');
-        $this->forge->addKey('deleted_at');
-        $this->forge->addForeignKey('author_created', 'users', 'id', false, false);
-        //$this->forge->addForeignKey('author_update', 'users', 'id', false, false);
-        $this->forge->createTable('b_article');
+        $this->forge->addForeignKey('user_id', 'users', 'id', false, false);
+        $this->forge->createTable('b_posts');
 
 
         $fields = [
-            'id_article'        => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'default' => 0],
-            'id_lang'           => ['type' => 'INT', 'constraint' => 11],
+            'id_post_lang'      => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
+            'post_id'           => ['type' => 'int', 'constraint' => 11, 'unsigned' => true, 'default' => 0],
+            'id_lang'           => ['type' => 'int', 'constraint' => 11, 'unsigned' => true, 'default' => 0],
             'name'              => ['type' => 'VARCHAR', 'constraint' => 255],
             'sous_name'         => ['type' => 'VARCHAR', 'constraint' => 255],
             'description_short' => ['type' => 'TEXT'],
@@ -51,34 +48,34 @@ class Migration_create_table_blog extends Migration
         ];
 
         $this->forge->addField($fields);
-        // $this->forge->addKey(['id_item', 'id_lang'], false, true);
-        $this->forge->addKey('id_article');
+        $this->forge->addKey('id_post_lang', true);
         $this->forge->addKey('id_lang');
-        $this->forge->addForeignKey('id_article', 'b_article', 'id_article', false, 'CASCADE');
-        $this->forge->createTable('b_article_lang', true);
+        $this->forge->addForeignKey('post_id', 'b_posts', 'id', false, 'CASCADE');
+        $this->forge->createTable('b_posts_langs', true);
 
 
         /* CATEGORIE */
         $fields = [
-            'id_category' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
-            'id_parent'    => ['type' => 'INT', 'constraint' => 11, 'default' => 0],
-            'order'        => ['type' => 'INT', 'constraint' => 11, 'default' => 0],
-            'active'       => ['type' => 'INT', 'constraint' => 11, 'default' => 1],
-            'created_at'   => ['type' => 'DATETIME', 'null' => true],
-            'updated_at'   => ['type' => 'DATETIME', 'null' => true],
-            'deleted_at'   => ['type' => 'DATETIME', 'null' => true],
+            'id'         => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
+            'id_parent'  => ['type' => 'INT', 'constraint' => 11, 'default' => 0],
+            'order'      => ['type' => 'INT', 'constraint' => 11, 'default' => 0],
+            'active'     => ['type' => 'INT', 'constraint' => 11, 'default' => 1],
+            'created_at' => ['type' => 'DATETIME', 'null' => true],
+            'updated_at' => ['type' => 'DATETIME', 'null' => true],
+            'deleted_at' => ['type' => 'DATETIME', 'null' => true],
         ];
 
         $this->forge->addField($fields);
-        $this->forge->addKey('id_category', true);
+        $this->forge->addKey('id', true);
         $this->forge->addKey('created_at');
         $this->forge->addKey('updated_at');
         $this->forge->addKey('deleted_at');
-        $this->forge->createTable('b_category');
+        $this->forge->createTable('b_categories');
 
 
         $fields = [
-            'id_category'      => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'default' => 0],
+            'id_categorie_lang' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
+            'category_id'       => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'default' => 0],
             'id_lang'           => ['type' => 'INT', 'constraint' => 11],
             'name'              => ['type' => 'VARCHAR', 'constraint' => 255],
             'description_short' => ['type' => 'TEXT'],
@@ -89,33 +86,26 @@ class Migration_create_table_blog extends Migration
         ];
 
         $this->forge->addField($fields);
-        // $this->forge->addKey(['id_item', 'id_lang'], false, true);
-        $this->forge->addKey('id_category');
+        $this->forge->addKey('id_categorie_lang', true);
         $this->forge->addKey('id_lang');
-        $this->forge->addForeignKey('id_category', 'b_category', 'id_category', false, 'CASCADE');
-        $this->forge->createTable('b_category_lang', true);
+        $this->forge->addForeignKey('category_id', 'b_categories', 'id', false, 'CASCADE');
+        $this->forge->createTable('b_categories_langs', true);
 
 
         $fields = [
-            'id_article'   => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true],
-            'id_category' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true],
-            'created_at'   => ['type' => 'DATETIME', 'null' => true],
-            'deleted_at'   => ['type' => 'DATETIME', 'null' => true],
+            'post_id'      => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true],
+            'category_id' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true],
         ];
 
         $this->forge->addField($fields);
-        // $this->forge->addKey(['id_item', 'id_lang'], false, true);
-        $this->forge->addKey(['id_article', 'id_category'], FALSE, TRUE);
-        $this->forge->addKey('created_at');
-        $this->forge->addKey('deleted_at');
-        $this->forge->addForeignKey('id_article', 'b_article', 'id_article', false, 'CASCADE');
-        $this->forge->addForeignKey('id_category', 'b_category', 'id_category', false, false);
-        $this->forge->createTable('b_article_category', true);
+        $this->forge->addForeignKey('post_id', 'b_posts', 'id', false, 'CASCADE');
+        $this->forge->addForeignKey('category_id', 'b_categories', 'id', false, false);
+        $this->forge->createTable('b_posts_categories');
 
 
         /* TAGS */
         $fields = [
-            'id_tag'     => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
+            'id'     => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
             'slug'       => ['type' => 'VARCHAR', 'constraint' => 255],
             'created_at' => ['type' => 'DATETIME', 'null' => true],
             'updated_at' => ['type' => 'DATETIME', 'null' => true],
@@ -123,30 +113,30 @@ class Migration_create_table_blog extends Migration
         ];
 
         $this->forge->addField($fields);
-        $this->forge->addKey('id_tag', true);
+        $this->forge->addKey('id', true);
         $this->forge->addKey('created_at');
         $this->forge->addKey('updated_at');
         $this->forge->addKey('deleted_at');
-        $this->forge->createTable('tags');
+        $this->forge->createTable('b_tags');
 
 
         $fields = [
-            'id_tag'  => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'default' => 0],
-            'id_lang' => ['type' => 'INT', 'constraint' => 11],
-            'name'    => ['type' => 'VARCHAR', 'constraint' => 255],
+            'id_tag_lang' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
+            'tag_id'      => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'default' => 0],
+            'id_lang'     => ['type' => 'INT', 'constraint' => 11],
+            'name'        => ['type' => 'VARCHAR', 'constraint' => 255],
         ];
 
         $this->forge->addField($fields);
-        // $this->forge->addKey(['id_item', 'id_lang'], false, true);
-        $this->forge->addKey('id_tag');
+        $this->forge->addKey('id_tag_lang', true);
         $this->forge->addKey('id_lang');
-        $this->forge->addForeignKey('id_tag', 'tags', 'id_tag', false, 'CASCADE');
-        $this->forge->createTable('tags_langs', true);
+        $this->forge->addForeignKey('tag_id', 'b_tags', 'id', false, 'CASCADE');
+        $this->forge->createTable('b_tags_langs');
 
         /* COMMENTS */
         $fields = [
             'id_comment'   => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
-            'id_article'   => ['type' => 'INT', 'constraint' => 11],
+            'post_id'      => ['type' => 'int', 'constraint' => 11, 'unsigned' => true, 'default' => 0],
             'author_name'  => ['type' => 'VARCHAR', 'constraint' => 255],
             'author_email' => ['type' => 'TEXT'],
             'author_ip'    => ['type' => 'VARCHAR', 'constraint' => 255],
@@ -159,9 +149,7 @@ class Migration_create_table_blog extends Migration
 
         $this->forge->addField($fields);
         $this->forge->addKey('id_comment', true);
-        $this->forge->addKey('created_at');
-        $this->forge->addKey('updated_at');
-        $this->forge->addKey('deleted_at');
+        $this->forge->addForeignKey('post_id', 'b_posts', 'id', false, 'CASCADE');
         $this->forge->createTable('b_comments');
     }
 
@@ -169,13 +157,13 @@ class Migration_create_table_blog extends Migration
 
     public function down()
     {
-        $this->forge->dropTable('b_article');
-        $this->forge->dropTable('b_article_lang');
-        $this->forge->dropTable('b_article_category');
-        $this->forge->dropTable('b_category');
-        $this->forge->dropTable('b_category_lang');
-        $this->forge->dropTable('tags');
-        $this->forge->dropTable('tags_langs');
+        $this->forge->dropTable('b_posts');
+        $this->forge->dropTable('b_posts_langs');
+        $this->forge->dropTable('b_posts_categories');
+        $this->forge->dropTable('b_categories');
+        $this->forge->dropTable('b_categories_langs');
+        $this->forge->dropTable('b_tags');
+        $this->forge->dropTable('b_tags_langs');
         $this->forge->dropTable('b_comments');
     }
 }

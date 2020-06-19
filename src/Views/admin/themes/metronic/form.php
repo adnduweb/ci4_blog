@@ -4,7 +4,7 @@
 	<?= form_open_multipart('', ['id' => 'kt_apps_user_add_user_form', 'class' => 'kt-form', 'novalidate' => false]); ?>
 	<input type="hidden" name="action" value="<?= $action; ?>" />
 	<input type="hidden" name="module" value="<?= base64_encode('Adnduweb\Ci4_blog'); ?>" />
-	<input type="hidden" name="controller" value="AdminArticleController" />
+	<input type="hidden" name="controller" value="AdminPostsController" />
 
 
 	<?= $this->include('/admin/themes/metronic/__partials/kt_form_toolbar') ?>
@@ -58,7 +58,7 @@
 							<div class="kt-form__body">
 								<div class="kt-section kt-section--first">
 									<div class="kt-section__body">
-										<?= View('/admin/themes/metronic/__partials/builders/builder', ['compoment_authorized' => ['textfield']]) ?>
+										<?= View('/admin/themes/metronic/__partials/builder/builder', ['compoment_authorized' => ['textfield']]) ?>
 									</div>
 								</div>
 							</div>

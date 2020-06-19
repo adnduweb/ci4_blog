@@ -66,4 +66,4 @@
 </div>
 
 
-<?php if (!empty($form->id_category)) { ?> <?= form_hidden('id_category', $form->id_category); ?> <?php } ?>
+<?php if (!empty($form->id)) { ?> <?= form_hidden('id', $form->id); ?> <?php } ?>

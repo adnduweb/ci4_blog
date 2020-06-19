@@ -5,9 +5,9 @@ namespace Adnduweb\Ci4_blog\Controllers\Admin;
 use App\Controllers\Admin\AdminController;
 use App\Libraries\AssetsBO;
 use App\Libraries\Tools;
-use Adnduweb\Ci4_blog\Entities\Article;
-use Adnduweb\Ci4_blog\Models\ArticlesModel;
-use Adnduweb\Ci4_blog\Models\CategoriesModel;
+use Adnduweb\Ci4_blog\Entities\Post;
+use Adnduweb\Ci4_blog\Models\PostModel;
+use Adnduweb\Ci4_blog\Models\CategoryModel;
 use \CodeIgniter\Test\Fabricator;
 
 
@@ -16,34 +16,35 @@ use \CodeIgniter\Test\Fabricator;
  *
  * @package App\Controllers\Admin
  */
-class AdminArticleController extends AdminController
+class AdminPostsController extends AdminController
 {
 
-    use \App\Traits\BuilderTrait;
+    use \App\Traits\BuilderModelTrait;
     use \App\Traits\ModuleTrait;
-    use \Adnduweb\Ci4_blog\Traits\ArticleTrait;
+    use \Adnduweb\Ci4_blog\Traits\PostTrait;
 
     /**
-     * @var \Adnduweb\Ci4_blog\Models\ArticlesModel
+     * @var \Adnduweb\Ci4_blog\Models\PostModel
      */
     public $tableModel;
 
     /**
-     * @var \Adnduweb\Ci4_blog\Models\CategoriesModel
+     * @var \Adnduweb\Ci4_blog\Models\CategoryModel
      */
     private $categories_model;
 
-    public $module = true;
-    public $name_module = 'blog';
+
     protected $idModule;
-    public $controller = 'blog';
-    public $item = 'blog';
-    public $type = 'Adnduweb/Ci4_blog';
-    public $pathcontroller  = '/public/blog/articles';
-    public $fake  = true;
-    public $fieldList = 'b_article.id_article';
-    public $add = true;
-    public $multilangue = true;
+    public $module         = true;
+    public $name_module    = 'blog';
+    public $controller     = 'blog';
+    public $item           = 'blog';
+    public $type           = 'Adnduweb/Ci4_blog';
+    public $pathcontroller = '/public/blog/posts';
+    public $fake           = true;
+    public $fieldList      = 'b_posts.id';
+    public $add            = true;
+    public $multilangue    = true;
 
     /**
      * Article constructor.
@@ -53,8 +54,8 @@ class AdminArticleController extends AdminController
     public function __construct()
     {
         parent::__construct();
-        $this->tableModel       = new ArticlesModel();
-        $this->categories_model = new CategoriesModel();
+        $this->tableModel       = new PostModel();
+        $this->categories_model = new CategoryModel();
         $this->module           = "blog";
         $this->idModule         = $this->getIdModule();
     }
@@ -76,7 +77,7 @@ class AdminArticleController extends AdminController
     public function ajaxProcessList()
     {
         $parent = parent::ajaxProcessList();
-        return $this->respond($parent, 200, lang('Core.liste des articles'));
+        return $this->respond($parent, 200, lang('Core.liste des posts'));
     }
 
     public function renderForm($id = null)
@@ -84,18 +85,20 @@ class AdminArticleController extends AdminController
         AssetsBO::add_js([$this->get_current_theme_view('plugins/custom/ckeditor/ckeditor-classic.bundle.js', 'default')]);
         AssetsBO::add_js([$this->get_current_theme_view('controllers/medias/js/manager.js', 'default')]);
         AssetsBO::add_js([$this->get_current_theme_view('js/builder.js', 'default')]);
+
         if (class_exists('\Adnduweb\Ci4_blog\Controllers\Admin\AdminArticleController'))
             AssetsBO::add_js([$this->get_current_theme_view('controllers/blog/js/builder.js', 'default')]);
+
         if (class_exists('\Adnduweb\Ci4_diaporama\Controllers\Admin\AdminDiaporamasController'))
             AssetsBO::add_js([$this->get_current_theme_view('controllers/diaporamas/js/builder.js', 'default')]);
 
         if (is_null($id)) {
-            $this->data['form'] = new Article($this->request->getPost());
+            $this->data['form'] = new Post($this->request->getPost());
         } else {
-            $this->data['form'] = $this->tableModel->where('id_article', $id)->first();
+            $this->data['form'] = $this->tableModel->where('id', $id)->first();
             if (empty($this->data['form'])) {
                 Tools::set_message('danger', lang('Core.not_{0}_exist', [$this->item]), lang('Core.warning_error'));
-                return redirect()->to('/' . env('CI_SITE_AREA') . '/' . user()->id_company . '/public/pages');
+                return redirect()->to('/' . env('CI_SITE_AREA') . '/' . user()->company_id . '/public/pages');
             }
         }
 
@@ -116,8 +119,9 @@ class AdminArticleController extends AdminController
         $this->data['form']->gettype = $this->getType();
         $this->data['form']->categories =  $this->categories_model->getlist();
         $this->data['form']->getCatByArt = $this->tableModel->getCatByArt($id);
-        //print_r($this->data['form']->getArticles_categories(service('Settings')->setting_id_lang)); exit;
-        //print_r($this->data['form']); exit;
+        //print_r($this->data['form']->getposts_categories(service('Settings')->setting_id_lang)); exit;
+        // print_r($this->data['form']);
+        // exit;
 
         parent::renderForm($id);
         $this->data['edit_title'] = lang('Core.edit_article');
@@ -133,19 +137,17 @@ class AdminArticleController extends AdminController
         }
 
         // Try to create the user
-        $articleBase = new Article($this->request->getPost());
+        $articleBase = new Post($this->request->getPost());
         $this->lang = $this->request->getPost('lang');
-        //$articleBase->slug = strtolower(preg_replace('/[^a-zA-Z0-9\-]/', '', preg_replace('/\s+/', '-', $articleBase->slug)));
+
         $articleBase->id_category = $articleBase->id_category_default;
         $articleBase->id_category_default = $articleBase->id_category_default[0];
-        $articleBase->author_update = user()->id;
+        $articleBase->user_updated = user()->id;
         $articleBase->active =  1;
 
         // Les images
         $articleBase->picture_one = $this->getImagesPrep($articleBase->getPictureOneAtt());
         $articleBase->picture_header = $this->getImagesPrep($articleBase->getPictureheaderAtt());
-
-        //print_r($articleBase); exit;
 
         if (!$this->tableModel->save($articleBase)) {
             Tools::set_message('danger', $this->tableModel->errors(), lang('Core.warning_error'));
@@ -156,19 +158,18 @@ class AdminArticleController extends AdminController
         $articleBase->saveCategorie($articleBase);
 
         // On enregistre les langues
-        $articleBase->saveLang($this->lang, $articleBase->id_article);
+        $articleBase->saveLang($this->lang, $articleBase->id);
 
         // On enregistre le Builder si existe
         $this->saveBuilder($this->request->getPost('builder'));
 
-
         // Success!
         Tools::set_message('success', lang('Core.save_data'), lang('Core.cool_success'));
         $redirectAfterForm = [
-            'url'                   => '/' . env('CI_SITE_AREA') . '/' . user()->id_company . '/public/blog/articles',
+            'url'                   => '/' . env('CI_SITE_AREA') . '/' . user()->company_id . '/public/blog/posts',
             'action'                => 'edit',
             'submithandler'         => $this->request->getPost('submithandler'),
-            'id'                    => $articleBase->id_article,
+            'id'                    => $articleBase->id,
         ];
         $this->redirectAfterForm($redirectAfterForm);
     }
@@ -183,13 +184,13 @@ class AdminArticleController extends AdminController
         }
 
         // Try to create the user
-        $articleBase = new Article($this->request->getPost());
+        $articleBase = new Post($this->request->getPost());
         $this->lang = $this->request->getPost('lang');
-        //$articleBase->slug = strtolower(preg_replace('/[^a-zA-Z0-9\-]/', '', preg_replace('/\s+/', '-', $articleBase->slug)));
+
         $articleBase->id_category = $articleBase->id_category_default;
         $articleBase->id_category_default = $articleBase->id_category_default[0];
-        $articleBase->author_created = user()->id;
-        $articleBase->author_update = user()->id;
+        $articleBase->user_id = user()->id;
+        $articleBase->user_updated = user()->id;
         $articleBase->active = 1;
 
         // Les images
@@ -200,23 +201,23 @@ class AdminArticleController extends AdminController
             Tools::set_message('danger', $this->tableModel->errors(), lang('Core.warning_error'));
             return redirect()->back()->withInput();
         }
-        $id_article = $this->tableModel->insertID();
-        $articleBase->id_article = $id_article;
+        $id = $this->tableModel->insertID();
+        $articleBase->id = $id;
 
         // On enregistre les categories
         $articleBase->saveCategorie($articleBase);
 
         // On enregistre les langues
         $this->lang = $this->request->getPost('lang');
-        $articleBase->saveLang($this->lang, $id_article);
+        $articleBase->saveLang($this->lang, $id);
 
         // Success!
         Tools::set_message('success', lang('Core.save_data'), lang('Core.cool_success'));
         $redirectAfterForm = [
-            'url'                   => '/' . env('CI_SITE_AREA') . '/' . user()->id_company . '/public/blog/articles',
+            'url'                   => '/' . env('CI_SITE_AREA') . '/' . user()->company_id . '/public/blog/posts',
             'action'                => 'add',
             'submithandler'         => $this->request->getPost('submithandler'),
-            'id'                    => $id_article,
+            'id'                    => $id,
         ];
         $this->redirectAfterForm($redirectAfterForm);
     }
@@ -252,15 +253,13 @@ class AdminArticleController extends AdminController
         return $options;
     }
 
-    public function dupliquer(int $id_article)
+    public function dupliquer(int $id)
     {
         try {
-            $this->tableModel->dupliquer($id_article);
+            $this->tableModel->dupliquer($id);
             Tools::set_message('success', lang('Core.save_data_dupliquer'), lang('Core.cool_success'));
             return redirect()->to('/' . CI_SITE_AREA . $this->pathcontroller);
         } catch (\Exception $e) {
-            // print_r($e);
-            // exit;
             Tools::set_message('danger', str_replace('::', '->', $e->getMessage()), lang('Core.warning_error'));
             return redirect()->to('/' . CI_SITE_AREA . $this->pathcontroller);
         }
@@ -274,13 +273,13 @@ class AdminArticleController extends AdminController
                 foreach ($value['selected'] as $selected) {
 
                     $data[] = [
-                        'id_article' => $selected,
+                        'id' => $selected,
                         'active'     => $value['active'],
                     ];
                 }
             }
 
-            if ($this->tableModel->updateBatch($data, 'id_article')) {
+            if ($this->tableModel->updateBatch($data, 'id')) {
                 return $this->respond(['status' => true, 'message' => lang('Js.your_seleted_records_statuses_have_been_updated')], 200);
             } else {
                 return $this->respond(['status' => false, 'database' => true, 'display' => 'modal', 'message' => lang('Js.aucun_enregistrement_effectue')], 200);
@@ -296,13 +295,13 @@ class AdminArticleController extends AdminController
                 foreach ($value['selected'] as $selected) {
 
                     $data[] = [
-                        'id_article' => $selected,
+                        'id' => $selected,
                         'type'       => $value['type'],
                     ];
                 }
             }
 
-            if ($this->tableModel->updateBatch($data, 'id_article')) {
+            if ($this->tableModel->updateBatch($data, 'id')) {
                 return $this->respond(['status' => true, 'message' => lang('Js.your_seleted_records_statuses_have_been_updated')], 200);
             } else {
                 return $this->respond(['status' => false, 'database' => true, 'display' => 'modal', 'message' => lang('Js.aucun_enregistrement_effectue')], 200);
@@ -317,7 +316,7 @@ class AdminArticleController extends AdminController
             $data = [];
             if (isset($value['selected']) && !empty($value['selected'])) {
                 foreach ($value['selected'] as $selected) {
-                    $this->tableModel->delete(['id_article' => $selected]);
+                    $this->tableModel->delete(['id' => $selected]);
                 }
                 return $this->respond(['status' => true, 'type' => 'success', 'message' => lang('Js.your_selected_records_have_been_deleted')], 200);
             }
@@ -330,10 +329,10 @@ class AdminArticleController extends AdminController
 
         $fabricator = new Fabricator($this->tableModel);
         $makeArticle   = $fabricator->make($num);
-        $articles = $fabricator->create($num);
-        if (!empty($articles)) {
-            foreach ($articles as $article) {
-                $this->tableModel->fakelang($article->id_article);
+        $posts = $fabricator->create($num);
+        if (!empty($posts)) {
+            foreach ($posts as $article) {
+                $this->tableModel->fakelang($article->id);
             }
         }
         Tools::set_message('success', lang('Core.fakedata'), lang('Core.cool_success'));

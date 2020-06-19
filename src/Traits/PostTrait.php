@@ -2,7 +2,7 @@
 
 namespace Adnduweb\Ci4_blog\Traits;
 
-trait ArticleTrait
+trait PostTrait
 {
     public function getType()
     {

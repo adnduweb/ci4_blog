@@ -130,11 +130,11 @@
                     <?php if (!empty($form->getPictureOneAtt())) { ?>
                         <?php if (!empty($form->getPictureOneAtt())) { ?>
                             <?php $pictureOne = $form->getPictureOneAtt(); ?>
-                            <div class="kt-media is_unique kt-media_<?= $pictureOne->media->id_media; ?>" data-id-media="<?= $pictureOne->media->id_media; ?>">
+                            <div class="kt-media is_unique kt-media_<?= $pictureOne->media->id; ?>" data-id-media="<?= $pictureOne->media->id; ?>">
                                 <a href="javascript:;" class="kt-media">
                                     <img src="<?= $pictureOne->media->filename; ?>" alt="image">
                                 </a>
-                                <label class="kt-avatar__remove deletefile" data-container="body" data-only="true" data-toggle="kt-tooltip" title="" data-placement="top" data-original-title="remove image" data-id-field="picture_one" data-id-media="<?= $pictureOne->media->id_media; ?>" data-format="<?= $pictureOne->media->format; ?>" data-id-file="<?= $pictureOne->media->filename; ?>">
+                                <label class="kt-avatar__remove deletefile" data-container="body" data-only="true" data-toggle="kt-tooltip" title="" data-placement="top" data-original-title="remove image" data-id-field="picture_one" data-id-media="<?= $pictureOne->media->id; ?>" data-format="<?= $pictureOne->media->format; ?>" data-id-file="<?= $pictureOne->media->filename; ?>">
                                     <i class="fa fa-times"></i>
                                 </label>
                             </div>
@@ -173,11 +173,11 @@
                     <?php if (!empty($form->getPictureHeaderAtt())) { ?>
                         <?php if (!empty($form->getPictureHeaderAtt())) { ?>
                             <?php $pictureHeader = $form->getPictureHeaderAtt(); ?>
-                            <div class="kt-media is_unique kt-media_<?= $pictureHeader->media->id_media; ?>" data-id-media="<?= $pictureHeader->media->id_media; ?>">
+                            <div class="kt-media is_unique kt-media_<?= $pictureHeader->media->id; ?>" data-id-media="<?= $pictureHeader->media->id; ?>">
                                 <a href="javascript:;" class="kt-media">
                                     <img src="<?= $pictureHeader->media->filename; ?>" alt="image">
                                 </a>
-                                <label class="kt-avatar__remove deletefile" data-container="body" data-only="true" data-toggle="kt-tooltip" title="" data-placement="top" data-original-title="remove image" data-id-field="picture_header" data-id-media="<?= $pictureHeader->media->id_media; ?>" data-format="<?= $pictureHeader->media->format; ?>" data-id-file="<?= $pictureHeader->media->filename; ?>">
+                                <label class="kt-avatar__remove deletefile" data-container="body" data-only="true" data-toggle="kt-tooltip" title="" data-placement="top" data-original-title="remove image" data-id-field="picture_header" data-id-media="<?= $pictureHeader->media->id; ?>" data-format="<?= $pictureHeader->media->format; ?>" data-id-file="<?= $pictureHeader->media->filename; ?>">
                                     <i class="fa fa-times"></i>
                                 </label>
                             </div>
@@ -189,4 +189,5 @@
     </div>
 </div>
 
-<?php if (!empty($form->id_article)) { ?> <?= form_hidden('id_article', $form->id_article); ?> <?php } ?>
+<?php if (!empty($form->user_id)) { ?> <?= form_hidden('user_id', $form->user_id); ?> <?php } ?>
+<?php if (!empty($form->id)) { ?> <?= form_hidden('id', $form->id); ?> <?php } ?>

@@ -11,9 +11,9 @@ namespace App\Libraries;
 
 use App\Models\Admin\AuthModel;
 use App\Models\Blog\ArticleModel;
-use App\Models\Blog\CategoriesModel;
+use App\Models\Blog\CategoryModel;
 use App\Models\Blog\CommentsModel;
-use App\Models\Blog\PagesModel;
+use App\Models\Blog\PageModel;
 use App\Models\Blog\TagsModel;
 use Cocur\Slugify\Slugify;
 use Config\App;
@@ -31,7 +31,7 @@ class General
     private $session;
 
     /**
-     * @var \App\Models\Blog\CategoriesModel
+     * @var \App\Models\Blog\CategoryModel
      */
     private $categories_model;
 
@@ -46,7 +46,7 @@ class General
     private $comments_model;
 
     /**
-     * @var \App\Models\Blog\PagesModel
+     * @var \App\Models\Blog\PageModel
      */
     private $pages_model;
 
@@ -66,10 +66,10 @@ class General
     public function __construct()
     {
         $this->session      = Services::session(new App());
-        $this->categories_model = new CategoriesModel();
+        $this->categories_model = new CategoryModel();
         $this->article_model = new ArticleModel();
         $this->comments_model = new CommentsModel();
-        $this->pages_model = new PagesModel();
+        $this->pages_model = new PageModel();
         $this->Auth_model   = new AuthModel();
         $this->Tags_model = new TagsModel();
     }
