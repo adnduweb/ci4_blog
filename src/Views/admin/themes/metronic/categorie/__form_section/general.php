@@ -47,7 +47,7 @@
 <div class="form-group row kt-shape-bg-color-1">
     <label for="description_short" class="col-xl-3 col-lg-3 col-form-label"><?= ucfirst(lang('Core.description_short')); ?>* : </label>
     <div class="col-lg-9 col-xl-6">
-        <?= form_textarea_spread('description_short', $form->_prepareLang(), 'class="form-control lang"', true); ?>
+        <?= form_textarea_spread('description_short', $form->_prepareLang(), 'class="form-control lang"', false); ?>
     </div>
 </div>
 

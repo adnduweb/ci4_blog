@@ -4,7 +4,7 @@ namespace Adnduweb\Ci4_blog\Entities;
 
 use CodeIgniter\Entity;
 
-class Category extends Entity
+class Category extends Entity 
 {
     use \Tatter\Relations\Traits\EntityTrait;
     use \App\Traits\BuilderEntityTrait;

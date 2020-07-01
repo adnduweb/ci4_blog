@@ -41,22 +41,24 @@ class FrontArticleController extends \App\Controllers\Front\FrontController
             return redirect()->to(base_urlFront(), 302);
         }
 
-        $this->data['page'] = $this->tableModel->where('id_post', $articleLight->id_post)->first();
+        //print_r($articleLight); exit;
+
+        $this->data['page'] = $this->tableModel->where('id', $articleLight->id)->first();
 
         $this->data['no_follow_no_index'] = ($this->data['page']->no_follow_no_index == 0) ?  'index follow' :  'no-index no-follow';
         $this->data['id']  = str_replace('/', '', $this->data['page']->slug);
         $this->data['class'] = $this->data['class'] . ' ' .  str_replace('/', '', $this->data['page']->slug) . ' ' .  str_replace('/', '', $this->data['page']->template) . ' article_' . $this->data['page']->id_post;
         $this->data['meta_title'] = $this->data['page']->meta_title;
         $this->data['meta_description'] = $this->data['page']->meta_description;
-        $builder = $this->getBuilderIdItem($this->data['page']->id_post, $this->idModule);
-        if (!empty($builder)) {
-            $this->data['page']->builder = $builder;
+        $builders = $this->getBuilderIdItem($this->data['page']->id_post, $this->idModule);
+        if (!empty($builders)) {
+            $this->data['page']->builder = $builders;
             $temp = [];
             foreach ($this->data['page']->builder as $builder) {
                 $temp[$builder->order] = $builder;
             }
             ksort($temp);
-            $this->data['page']->builder = $temp;
+            $this->data['page']->builders = $temp;
         }
         // print_r($this->data['page']->getLangsLink());
         // exit;

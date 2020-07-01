@@ -30,17 +30,17 @@ class AdminCategoriesController extends AdminController
      * @var \Adnduweb\Ci4_blog\Models\PostModel
      */
     private $post_model;
-
-    public $module = true;
-    public $name_module = 'blog';
     protected $idModule;
-    public $controller = 'blog';
-    public $item = 'blog';
-    public $type = 'Adnduweb/Ci4_blog';
+    public $module          = true;
+    public $name_module     = 'blog';
+    public $controller      = 'blog';
+    public $item            = 'blog';
+    public $type            = 'Adnduweb/Ci4_blog';
     public $pathcontroller  = '/public/blog/categories';
-    public $fieldList = 'name';
-    public $add = true;
-    public $multilangue = true;
+    public $fieldList       = 'name';
+    public $add             = true;
+    public $multilangue     = true;
+    public $changeCategorie = true;
 
     /**
      * Article constructor.
@@ -66,12 +66,15 @@ class AdminCategoriesController extends AdminController
             Tools::set_message('danger', lang('Core.not_acces_permission'), lang('Core.warning_error'));
             return redirect()->to('/' . CI_SITE_AREA . '/dashboard');
         }
-        $this->data['nameController'] = lang('Core.' . $this->controller);
+        $this->data['nameController']    = lang('Core.' . $this->controller);
         $this->data['addPathController'] = $this->pathcontroller . '/add';
-        $this->data['toolbarUpdate'] = true;
+        $this->data['toolbarUpdate']     = true;
+        $this->data['changeCategorie']   = $this->changeCategorie;
+        $this->data['fakedata']          = $this->fake;
         if (isset($this->add) && $this->add == true)
             $this->data['add'] = lang('Core.add_' . $this->item);
         $this->data['countList'] = $this->tableModel->getAllCount(['field' => $this->fieldList, 'sort' => 'ASC'], []);
+        $this->data['categories'] = $this->tableModel->getAllCategoriesOptionParent();
 
         return view($this->get_current_theme_view('categorie/index', $this->type), $this->data);
     }
@@ -190,10 +193,10 @@ class AdminCategoriesController extends AdminController
                         break;
                     } else {
                         // On regarde si le groupe est déja affecté
-                        if ($this->tableModel->changeArticlesIncat($id) == false) {
+                        if ($this->tableModel->changeItemIncat($id) == false) {
                             $this->tableModel->delete($id);
                         } else {
-                            return $this->respond(['status' => false, 'type' => 'warning', 'message' => lang('Js.not_action_default')], 200);
+                            return $this->respond(['status' => false, 'type' => 'warning', 'message' => lang('Js.not_action_because_item_cat')], 200);
                         }
                     }
                 }

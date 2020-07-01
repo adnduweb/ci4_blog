@@ -41,6 +41,9 @@ class PostModel extends Model
     protected $useSoftDeletes     = false;
     protected $allowedFields      = ['id_category_default', 'user_id', 'user_updated', 'active', 'important', 'picture_one', 'picture_header', 'no_follow_no_index', 'order', 'type'];
     protected $useTimestamps      = true;
+    protected $createdField       = 'created_at';
+    protected $updatedField       = 'updated_at';
+    protected $deletedField       = 'deleted_at';
     protected $validationMessages = [];
     protected $skipValidation     = false;
 
@@ -61,6 +64,9 @@ class PostModel extends Model
         $this->b_categories_table_lang = $this->db->table('b_categories_langs');
     }
 
+    /**
+     * Genérateur de Fake
+     */
     public function fake(Generator &$faker)
     {
         return [
@@ -105,6 +111,10 @@ class PostModel extends Model
         $this->b_posts_categories->insert($dataCat);
     }
 
+    /**
+     * 
+     * Affichage en listing 
+     */
     public function getAllList(int $page, int $perpage, array $sort, array $query)
     {
         $this->b_posts_table->select();
@@ -127,6 +137,16 @@ class PostModel extends Model
             $i = 0;
             foreach ($b_postsResult as $article) {
                 $b_postsResult[$i]->b_categories_table = $this->getCatByArt($article->id);
+                $LangueDisplay = [];
+                foreach (service('switchlanguage')->getArrayLanguesSupported() as $k => $v) {
+                    if ($article->id_lang == $v) {
+                        //Existe = 
+                        $LangueDisplay[$k] = true;
+                    }else{
+                        $LangueDisplay[$k] = false;
+                    }
+                }
+                $b_postsResult[$i]->languages = $LangueDisplay;
                 $i++;
             }
         }
@@ -203,28 +223,28 @@ class PostModel extends Model
     }
 
 
-    // public function getLink(int $id, int $id_lang)
-    // {
-    //     $this->b_posts_table->select('slug');
-    //     $this->b_posts_table->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.post_id');
-    //     $this->b_posts_table->where([$this->table . '.id' => $id, 'id_lang' => $id_lang]);
-    //     $b_posts_table = $this->b_posts_table->get()->getRow();
-    //     return $b_posts_table;
-    // }
+    public function getLink(int $id, int $id_lang)
+    {
+        $this->b_posts_table->select('slug');
+        $this->b_posts_table->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.post_id');
+        $this->b_posts_table->where([$this->table . '.id' => $id, 'id_lang' => $id_lang]);
+        $b_posts_table = $this->b_posts_table->get()->getRow();
+        return $b_posts_table;
+    }
 
-    // public function getArticlesByIdCategory(int $id_category, int $id_lang)
-    // {
-    //     $this->b_posts_table->select();
-    //     $this->b_posts_table->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.post_id');
-    //     $this->b_posts_table->where([$this->table . '.id_category_default' => $id_category, 'id_lang' => $id_lang, 'type' => 1]);
-    //     $b_posts_table = $this->b_posts_table->get()->getResult();
-    //     if (!empty($b_posts_table)) {
-    //         foreach ($b_posts_table as &$article) {
-    //             $article = new Post((array) $article);
-    //         }
-    //     }
-    //     return $b_posts_table;
-    // }
+    public function getArticlesByIdCategory(int $id_category, int $id_lang)
+    {
+        $this->b_posts_table->select();
+        $this->b_posts_table->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.post_id');
+        $this->b_posts_table->where([$this->table . '.id_category_default' => $id_category, 'id_lang' => $id_lang, 'type' => 1]);
+        $b_posts_table = $this->b_posts_table->get()->getResult();
+        if (!empty($b_posts_table)) {
+            foreach ($b_posts_table as &$article) {
+                $article = new Post((array) $article);
+            }
+        }
+        return $b_posts_table;
+    }
 
     public function dupliquer(int $id)
     {

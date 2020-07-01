@@ -4,12 +4,14 @@ namespace Adnduweb\Ci4_blog\Entities;
 
 use CodeIgniter\Entity;
 use Adnduweb\Ci4_blog\Models\CategoryModel;
+use Adnduweb\Ci4_blog\Entities\Category;
 use CodeIgniter\I18n\Time;
 
 class Post extends Entity
 {
     use \Tatter\Relations\Traits\EntityTrait;
     use \App\Traits\BuilderEntityTrait;
+
     protected $table          = 'b_posts';
     protected $tableLang      = 'b_posts_langs';
     protected $tablecArtCat   = 'b_posts_categories';
@@ -28,6 +30,12 @@ class Post extends Entity
     protected $casts = [];
 
 
+    public function getDateCreateadUTC(){
+ 
+            return $this->attributes['created_at'] = new Time($this->attributes['created_at'], 'UTC');
+    }
+
+
     // public function getSlug()
     // {
     //     return $this->attributes['slug'] ?? null;
@@ -42,15 +50,19 @@ class Post extends Entity
     //     }
     // }
 
-    // public function getUpdated()
-    // {
-    //     $format = service('switchlanguage')->getFormat();
-    //     $date = (!empty($this->attributes['updated_at'])) ? $this->attributes['updated_at'] : $this->attributes['created_at'];
-    //     $date = $this->mutateDate($date);
-    //     $timezone = $this->timezone ?? app_timezone();
-    //     $date->setTimezone($timezone);
-    //     return $date->format($format);
-    // }
+    public function getCategorie(){
+        return new Category(['id' => $this->attributes['id_category_default']]);
+    }
+
+    public function getUpdated()
+    {
+        $format = service('switchlanguage')->getFormat();
+        $date = (!empty($this->attributes['updated_at'])) ? $this->attributes['updated_at'] : $this->attributes['created_at'];
+        $date = $this->mutateDate($date);
+        $timezone = $this->timezone ?? app_timezone();
+        $date->setTimezone($timezone);
+        return $date->format($format);
+    }
 
 
     public function getLinkArticle($slug = false)
@@ -81,9 +93,9 @@ class Post extends Entity
                 return $image;
 
             $mediasModel = new \App\Models\mediaModel();
-            $image = $mediasModel->getMediaById($getAttrOptions->media->id_media, service('switchlanguage')->getIdLocale());
+            $image = $mediasModel->getMediaById($getAttrOptions->media->id, service('switchlanguage')->getIdLocale());
             if (empty($image)) {
-                $image = $mediasModel->where('id_media', $getAttrOptions->media->id_media)->get()->getRow();
+                $image = $mediasModel->where('id', $getAttrOptions->media->id)->get()->getRow();
             }
             // print_r($image);
             // exit;
@@ -110,6 +122,42 @@ class Post extends Entity
             return json_decode($this->attributes['picture_header']);
         }
         return null;
+    }
+
+    public function getImageHeaderAtt($format = false)
+    {
+        $image = null;
+
+        if (!empty($this->attributes['picture_header'])) {
+
+            $getAttrOptions = json_decode($this->attributes['picture_header']);;
+            if (empty($getAttrOptions))
+                return $image;
+
+            $mediasModel = new \App\Models\mediaModel();
+            $image = $mediasModel->getMediaById($getAttrOptions->media->id, service('switchlanguage')->getIdLocale());
+            if (empty($image)) {
+                $image = $mediasModel->where('id', $getAttrOptions->media->id)->get()->getRow();
+            }
+           
+            if (is_object($image)) {
+                if ($format == true) {
+                    $getAttrOptions->media->filename =  base_url() . '/uploads/' . $format . '/' . $image->namefile;
+                    list($width, $height, $type, $attr) =  getimagesize($getAttrOptions->media->filename);
+                    $getAttrOptions->media->dimensions = (object) ['width' => $width, 'height' => $height];
+                    $getAttrOptions->media->format = $format;
+                }
+                $image->class = 'adw_lazyload ';
+                $image->options = $getAttrOptions;
+            }
+
+            // print_r($image);
+            // exit;
+        }
+
+        //var_dump($image);exit;
+
+        return $image;
     }
 
     public function _prepareLang()

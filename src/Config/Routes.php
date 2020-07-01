@@ -29,8 +29,14 @@ if (service('Settings')->setting_activer_multilangue == true) {
 $routes->get($locale . '/' . env('url.blog_cat') . '/(:segment)' . env('app.suffix_url'), 'FrontCategoriesController::Show/$1', ['namespace' => '\Adnduweb\Ci4_blog\Controllers\Front']);
 $routes->get($locale . '/' . env('url.blog') . '/(:segment)' . env('app.suffix_url'), 'FrontArticleController::Show/$1', ['namespace' => '\Adnduweb\Ci4_blog\Controllers\Front']);
 
+$routes->get($locale . '/actualites' . env('app.suffix_url'), 'FrontCategoriesController::all', ['namespace' => '\Adnduweb\Ci4_blog\Controllers\Front']);
+$routes->get($locale . '/actualites/(:segment)' . env('app.suffix_url'), 'FrontArticleController::Show/$1', ['namespace' => '\Adnduweb\Ci4_blog\Controllers\Front']);
+$routes->get($locale . '/news' . env('app.suffix_url'), 'FrontCategoriesController::all', ['namespace' => '\Adnduweb\Ci4_blog\Controllers\Front']);
+$routes->get($locale . '/news/(:segment)' . env('app.suffix_url'), 'FrontArticleController::Show/$1', ['namespace' => '\Adnduweb\Ci4_blog\Controllers\Front']);
 
-//Pages car le derneir de PSR4
+//Pages car le dernier de PSR4
 $routes->get($locale . '/(:segment)' . env('app.suffix_url'), 'FrontPagesController::show/$1', ['namespace' => '\Adnduweb\Ci4_page\Controllers\Front']);
 $routes->get($locale . '/(:segment)/(:segment)' . env('app.suffix_url'), 'FrontPagesController::show/$2', ['namespace' => '\Adnduweb\Ci4_page\Controllers\Front']);
 $routes->get($locale . '/(:segment)/(:segment)/(:segment)' . env('app.suffix_url'), 'FrontPagesController::show/$3', ['namespace' => '\Adnduweb\Ci4_page\Controllers\Front']);
+
+

@@ -35,6 +35,10 @@ class CategoryModel extends Model
     protected $without            = [];
     protected $primaryKey         = 'id';
     protected $primaryKeyLang     = 'category_id';
+    protected $tableP             = 'b_posts';
+    protected $tablePLang         = 'b_posts_langs';
+    protected $primaryKeyP        = 'id';
+    protected $primaryKeyPLang    = 'post_id';
     protected $returnType         = Category::class;
     protected $useSoftDeletes     = true;
     protected $allowedFields      = ['id_parent', 'active', 'order'];
@@ -54,7 +58,7 @@ class CategoryModel extends Model
     public function __construct(...$params)
     {
         parent::__construct(...$params);
-        $this->b_posts_table           = $this->db->table('b_posts');
+        $this->b_posts           = $this->db->table('b_posts');
         $this->b_categories_table      = $this->db->table('b_categories');
         $this->b_categories_table_lang = $this->db->table('b_categories_langs');
         $this->b_posts_categories      = $this->db->table('b_posts_categories');
@@ -83,10 +87,10 @@ class CategoryModel extends Model
         $this->b_categories_table->select('created_at as date_create_at');
         $this->b_categories_table->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.category_id');
         if (isset($query[0]) && is_array($query)) {
-            $this->b_categories_table->where('deleted_at IS NULL AND (name LIKE "%' . $query[0] . '%" OR description_short LIKE "%' . $query[0] . '%") AND id_lang = ' . service('settings')->setting_id_lang);
+            $this->b_categories_table->where('deleted_at IS NULL AND (name LIKE "%' . $query[0] . '%" OR description_short LIKE "%' . $query[0] . '%") AND id_lang = ' . service('switchlanguage')->getIdLocale());
             $this->b_categories_table->limit(0, $page);
         } else {
-            $this->b_categories_table->where('deleted_at IS NULL AND id_lang = ' . service('settings')->setting_id_lang);
+            $this->b_categories_table->where('deleted_at IS NULL AND id_lang = ' . service('switchlanguage')->getIdLocale());
             $page = ($page == '1') ? '0' : (($page - 1) * $perpage);
             $this->b_categories_table->limit($perpage, $page);
         }
@@ -94,10 +98,29 @@ class CategoryModel extends Model
 
         $this->b_categories_table->orderBy($sort['field'] . ' ' . $sort['sort']);
 
-        $groupsRow = $this->b_categories_table->get()->getResult();
+        $categoriesRow = $this->b_categories_table->get()->getResult();
+
+        // In va chercher les products
+        if (!empty($categoriesRow)) {
+            $i = 0;
+            foreach ($categoriesRow as $category) {
+                $categoriesRow[$i]->count_product = $this->changeItemIncat($category->{$this->primaryKey})->id;
+                $LangueDisplay = [];
+                foreach (service('switchlanguage')->getArrayLanguesSupported() as $k => $v) {
+                    if ($category->id_lang == $v) {
+                        //Existe = 
+                        $LangueDisplay[$k] = true;
+                    }else{
+                        $LangueDisplay[$k] = false;
+                    }
+                }
+                $categoriesRow[$i]->languages = $LangueDisplay;
+                $i++;
+            }
+        }
 
         //echo $this->b_categories_table->getCompiledSelect(); exit;
-        return $groupsRow;
+        return $categoriesRow;
     }
 
     public function getAllCount(array $sort, array $query)
@@ -105,9 +128,9 @@ class CategoryModel extends Model
         $this->b_categories_table->select($this->table . '.' . $this->primaryKey);
         $this->b_categories_table->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.category_id');
         if (isset($query[0]) && is_array($query)) {
-            $this->b_categories_table->where('deleted_at IS NULL AND (name LIKE "%' . $query[0] . '%" OR description_short LIKE "%' . $query[0] . '%") AND id_lang = ' . service('settings')->setting_id_lang);
+            $this->b_categories_table->where('deleted_at IS NULL AND (name LIKE "%' . $query[0] . '%" OR description_short LIKE "%' . $query[0] . '%") AND id_lang = ' . service('switchlanguage')->getIdLocale());
         } else {
-            $this->b_categories_table->where('deleted_at IS NULL AND id_lang = ' . service('settings')->setting_id_lang);
+            $this->b_categories_table->where('deleted_at IS NULL AND id_lang = ' . service('switchlanguage')->getIdLocale());
         }
 
         $this->b_categories_table->orderBy($sort['field'] . ' ' . $sort['sort']);
@@ -204,57 +227,103 @@ class CategoryModel extends Model
         return $this->b_categories_table_lang->get()->getRow()->name;
     }
 
-    public function changeb_posts_tableIncat(int $id)
-    {
+    // public function changeb_postsIncat(int $id)
+    // {
 
-        $this->b_article_categorie->select();
-        $this->b_article_categorie->where(['id' => $id]);
-        $b_article_categorie = $this->b_article_categorie->get()->getResult();
+    //     $this->b_article_categorie->select();
+    //     $this->b_article_categorie->where(['id' => $id]);
+    //     $b_article_categorie = $this->b_article_categorie->get()->getResult();
 
-        // On met par default les relatiosn b_categories_table
-        if (!empty($b_article_categorie)) {
-            foreach ($b_article_categorie as $article) {
-                // ON supprime cette b_categories_table des b_posts_table
-                $this->b_article_categorie->delete(['post_id' => $article->post_id, 'id' => $id]);
-                $this->b_article_categorie->delete(['post_id' => $article->post_id, 'id' => $this->id_default]);
+    //     // On met par default les relatiosn b_categories_table
+    //     if (!empty($b_article_categorie)) {
+    //         foreach ($b_article_categorie as $article) {
+    //             // ON supprime cette b_categories_table des b_posts
+    //             $this->b_article_categorie->delete(['post_id' => $article->post_id, 'id' => $id]);
+    //             $this->b_article_categorie->delete(['post_id' => $article->post_id, 'id' => $this->id_default]);
 
 
-                $this->b_article_categorie->set(['id' => $this->id_default]);
-                $this->b_article_categorie->where('id', $id);
+    //             $this->b_article_categorie->set(['id' => $this->id_default]);
+    //             $this->b_article_categorie->where('id', $id);
 
-                $data = [
-                    'post_id'   =>  $article->post_id,
-                    'id' => $this->id_default,
-                    'created_at' => date('Y-m-d H:i:s'),
-                ];
-                try {
-                    $this->b_article_categorie->insert($data);
-                } catch (\Exception $e) {
-                    return $this->db->error()['code'];
-                }
-            }
-        }
+    //             $data = [
+    //                 'post_id'   =>  $article->post_id,
+    //                 'id' => $this->id_default,
+    //                 'created_at' => date('Y-m-d H:i:s'),
+    //             ];
+    //             try {
+    //                 $this->b_article_categorie->insert($data);
+    //             } catch (\Exception $e) {
+    //                 return $this->db->error()['code'];
+    //             }
+    //         }
+    //     }
 
-        $this->b_posts_table->select('id_default');
-        $this->b_posts_table->where(['id_default' => $id]);
-        $b_posts_table = $this->b_categories_table_lang->get()->getResult();
+    //     $this->b_posts->select('id_default');
+    //     $this->b_posts->where(['id_default' => $id]);
+    //     $b_posts = $this->b_categories_table_lang->get()->getResult();
 
-        // On met par default les relatiosn b_categories_table
-        if (!empty($b_posts_table)) {
-            foreach ($b_posts_table as $article) {
-                $this->b_posts_table->set(['id_default' => $this->id_default]);
-                $this->b_posts_table->where('id_default', $id);
-                $this->b_posts_table->update();
-            }
-        }
-    }
+    //     // On met par default les relatiosn b_categories_table
+    //     if (!empty($b_posts)) {
+    //         foreach ($b_posts as $article) {
+    //             $this->b_posts->set(['id_default' => $this->id_default]);
+    //             $this->b_posts->where('id_default', $id);
+    //             $this->b_posts->update();
+    //         }
+    //     }
+    // }
 
 
     public function getAllCat()
     {
         $this->b_categories_table->select($this->table . '.' . $this->primaryKey . ', name');
         $this->b_categories_table->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.category_id');
-        $this->b_categories_table->where('deleted_at IS NULL AND id_lang = ' . service('settings')->setting_id_lang);
+        $this->b_categories_table->where('deleted_at IS NULL AND id_lang = ' . service('switchlanguage')->getIdLocale());
         return $this->b_categories_table->get()->getResult();
+    }
+
+
+    /****
+     *
+     * Il ya des produits dans cette categories ?
+     */
+    public function changeItemIncat(int $id)
+    {
+        $this->b_posts->selectCount($this->tableP . '.' . $this->primaryKeyP);
+        $this->b_posts->where('deleted_at IS NULL AND  id_category_default = ' . $id);
+        return $this->b_posts->get()->getRow();
+    }
+
+    /**
+     *
+     * On change la categorie
+     */
+    public function updatePostCategorie(array $data)
+    {
+
+        //print_r($data);
+        foreach ($data as $subdata) {
+
+            $this->b_posts->select($this->tableP . '.' . $this->primaryKeyP);
+            $this->b_posts->where('deleted_at IS NULL AND  id_category_default = ' . $subdata['old_categorie']);
+            $listProducts = $this->b_posts->get()->getResult();
+            if (!empty($listProducts)) {
+                foreach ($listProducts as $post) {
+                    //print_r([$this->primaryKeyPLang => $post->{$this->primaryKeyPLang}]);
+                    // print_r($post);
+                    // exit;
+                    $this->b_posts_categories->delete([$this->primaryKeyPLang => $post->{$this->primaryKey}]);
+                    // print_r([$this->primaryKeyPLang => $post->{$this->primaryKey}]);
+                    // exit;
+
+                    $tab = ['id_category_default' => $subdata['new_categorie_id']];
+                    $this->b_posts->set($tab);
+                    $this->b_posts->where([$this->primaryKeyP => $post->{$this->primaryKeyP}]);
+                    //echo $this->b_posts->getCompiledUpdate();
+                    $this->b_posts->update();
+
+                    $this->b_posts_categories->insert([$this->primaryKeyPLang => $post->{$this->primaryKey}, $this->primaryKeyLang => $subdata['new_categorie_id']]);
+                }
+            }
+        }
     }
 }

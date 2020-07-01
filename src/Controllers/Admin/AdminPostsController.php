@@ -119,7 +119,7 @@ class AdminPostsController extends AdminController
         $this->data['form']->gettype = $this->getType();
         $this->data['form']->categories =  $this->categories_model->getlist();
         $this->data['form']->getCatByArt = $this->tableModel->getCatByArt($id);
-        //print_r($this->data['form']->getposts_categories(service('Settings')->setting_id_lang)); exit;
+        //print_r($this->data['form']->getposts_categories(service('switchlanguage')->getIdLocale())); exit;
         // print_r($this->data['form']);
         // exit;
 
@@ -324,6 +324,11 @@ class AdminPostsController extends AdminController
         return $this->failUnauthorized(lang('Js.not_autorized'), 400);
     }
 
+
+    /**
+     *
+     * Fake Product
+     */
     public function fake(int $num = 10)
     {
 
