@@ -2,22 +2,22 @@
 
 $routes->group(CI_SITE_AREA, ['namespace' => 'Adnduweb\Ci4_blog\Controllers\Admin', 'filter' => 'apiauth'], function ($routes) {
 
-    $routes->get('(:any)/blog/posts', 'AdminPostsController::renderViewList', ['as' => 'page-post']);
-    $routes->get('(:any)/blog/posts/edit/(:any)', 'AdminPostsController::renderForm/$2');
-    $routes->post('(:any)/blog/posts/edit/(:any)', 'AdminPostsController::postProcess/$2');
-    $routes->get('(:any)/blog/posts/add', 'AdminPostsController::renderForm');
-    $routes->post('(:any)/blog/posts/add', 'AdminPostsController::postProcess');
-    $routes->get('(:any)/blog/posts/dupliquer/(:segment)', 'AdminPostsController::dupliquer/$2');
-    $routes->get('(:any)/blog/posts/fake/(:segment)', 'AdminPostsController::fake/$2');
+    $routes->get(config('Blog')->urlMenuAdmin . '/blog/posts', 'AdminPostController::renderViewList', ['as' => 'blog-post']);
+    $routes->get(config('Blog')->urlMenuAdmin . '/blog/posts/edit/(:any)', 'AdminPostController::renderForm/$1');
+    $routes->post(config('Blog')->urlMenuAdmin . '/blog/posts/edit/(:any)', 'AdminPostController::postProcess/$1');
+    $routes->get(config('Blog')->urlMenuAdmin . '/blog/posts/add', 'AdminPostController::renderForm');
+    $routes->post(config('Blog')->urlMenuAdmin . '/blog/posts/add', 'AdminPostController::postProcess');
+    $routes->get(config('Blog')->urlMenuAdmin . '/blog/posts/dupliquer/(:segment)', 'AdminPostController::dupliquer/$1');
+    $routes->get(config('Blog')->urlMenuAdmin . '/blog/posts/fake/(:segment)', 'AdminPostController::fake/$1');
 
-    $routes->get('(:any)/blog/categories', 'AdminCategoriesController::renderViewList', ['as' => 'page-categorie']);
-    $routes->get('(:any)/blog/categories/edit/(:any)', 'AdminCategoriesController::renderForm/$2');
-    $routes->post('(:any)/blog/categories/edit/(:any)', 'AdminCategoriesController::postProcess/$2');
-    $routes->get('(:any)/blog/categories/add', 'AdminCategoriesController::renderForm');
-    $routes->post('(:any)/blog/categories/add', 'AdminCategoriesController::postProcess');
+    $routes->get(config('Blog')->urlMenuAdmin . '/blog/categories', 'AdminCategoryController::renderViewList', ['as' => 'blog-categorie']);
+    $routes->get(config('Blog')->urlMenuAdmin . '/blog/categories/edit/(:any)', 'AdminCategoryController::renderForm/$1');
+    $routes->post(config('Blog')->urlMenuAdmin . '/blog/categories/edit/(:any)', 'AdminCategoryController::postProcess/$1');
+    $routes->get(config('Blog')->urlMenuAdmin . '/blog/categories/add', 'AdminCategoryController::renderForm');
+    $routes->post(config('Blog')->urlMenuAdmin . '/blog/categories/add', 'AdminCategoryController::postProcess');
 
-    $routes->get('(:any)/blog/settings', 'AdminBlogSettingsController::renderForm');
-    $routes->post('(:any)/blog/settings', 'AdminBlogSettingsController::postProcess');
+    $routes->get(config('Blog')->urlMenuAdmin . '/blog/settings', 'AdminBlogSettingsController::renderForm');
+    $routes->post(config('Blog')->urlMenuAdmin . '/blog/settings', 'AdminBlogSettingsController::postProcess');
 });
 
 $locale = '/';

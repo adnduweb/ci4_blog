@@ -25,8 +25,7 @@ class PostModel extends Model
      */
     private $b_posts_table;
 
-    use \Tatter\Relations\Traits\ModelTrait;
-    use \Adnduweb\Ci4_logs\Traits\AuditsTrait;
+    use \Tatter\Relations\Traits\ModelTrait, \Adnduweb\Ci4_logs\Traits\AuditsTrait, \App\Models\BaseModel;
     protected $afterInsert        = ['auditInsert'];
     protected $afterUpdate        = ['auditUpdate'];
     protected $afterDelete        = ['auditDelete'];
@@ -38,6 +37,7 @@ class PostModel extends Model
     protected $primaryKeyLang     = 'post_id';
     protected $primaryKeyCatLang  = 'category_id';
     protected $returnType         = Post::class;
+    protected $localizeFile       = 'Adnduweb\Ci4_blog\Models\FormModel';
     protected $useSoftDeletes     = false;
     protected $allowedFields      = ['id_category_default', 'user_id', 'user_updated', 'active', 'important', 'picture_one', 'picture_header', 'no_follow_no_index', 'order', 'type'];
     protected $useTimestamps      = true;
@@ -46,6 +46,7 @@ class PostModel extends Model
     protected $deletedField       = 'deleted_at';
     protected $validationMessages = [];
     protected $skipValidation     = false;
+    protected $searchKtDatatable  = ['name', 'description_short', 'created_at'];
 
     /**
      * ArticleModel constructor.
@@ -57,7 +58,7 @@ class PostModel extends Model
     public function __construct(...$params)
     {
         parent::__construct();
-        $this->b_posts_table           = $this->db->table('b_posts');
+        $this->builder                 = $this->db->table('b_posts');
         $this->b_posts_table_lang      = $this->db->table('b_posts_langs');
         $this->b_posts_categories      = $this->db->table('b_posts_categories');
         $this->b_categories_table      = $this->db->table('b_categories');
@@ -111,27 +112,13 @@ class PostModel extends Model
         $this->b_posts_categories->insert($dataCat);
     }
 
-    /**
+    /** 
      * 
      * Affichage en listing 
      */
     public function getAllList(int $page, int $perpage, array $sort, array $query)
     {
-        $this->b_posts_table->select();
-        $this->b_posts_table->select('created_at as date_create_at');
-        $this->b_posts_table->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.post_id');
-        if (isset($query[0]) && is_array($query)) {
-            $this->b_posts_table->where('deleted_at IS NULL AND (name LIKE "%' . $query[0] . '%" OR description_short LIKE "%' . $query[0] . '%") AND id_lang = ' . service('switchlanguage')->getIdLocale());
-            $this->b_posts_table->limit(0, $page);
-        } else {
-            $this->b_posts_table->where('deleted_at IS NULL AND id_lang = ' . service('switchlanguage')->getIdLocale());
-            $page = ($page == '1') ? '0' : (($page - 1) * $perpage);
-            $this->b_posts_table->limit($perpage, $page);
-        }
-
-        $this->b_posts_table->orderBy($sort['field'] . ' ' . $sort['sort']);
-        $b_postsResult = $this->b_posts_table->get()->getResult();
-
+        $b_postsResult = $this->getBaseAllList($page, $perpage, $sort, $query, $this->searchKtDatatable);
         // In va chercher les b_categories_table
         if (!empty($b_postsResult)) {
             $i = 0;
@@ -151,26 +138,10 @@ class PostModel extends Model
             }
         }
 
-        //echo $this->b_posts_table->getCompiledSelect(); exit;
+        //echo $this->builder->getCompiledSelect(); exit;
         return $b_postsResult;
     }
 
-    public function getAllCount(array $sort, array $query)
-    {
-        $this->b_posts_table->select($this->table . '.' . $this->primaryKey);
-        $this->b_posts_table->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.post_id');
-        if (isset($query[0]) && is_array($query)) {
-            $this->b_posts_table->where('deleted_at IS NULL AND (name LIKE "%' . $query[0] . '%" OR description_short LIKE "%' . $query[0] . '%") AND id_lang = ' . service('switchlanguage')->getIdLocale());
-        } else {
-            $this->b_posts_table->where('deleted_at IS NULL AND id_lang = ' . service('switchlanguage')->getIdLocale());
-        }
-
-        $this->b_posts_table->orderBy($sort['field'] . ' ' . $sort['sort']);
-
-        $pages = $this->b_posts_table->get();
-        //echo $this->b_posts_table->getCompiledSelect(); exit;
-        return $pages->getResult();
-    }
 
     public function getCatArt(int $id): array
     {
@@ -199,11 +170,11 @@ class PostModel extends Model
 
     public function getIdArticleBySlug($slug)
     {
-        $this->b_posts_table->select($this->table . '.' . $this->primaryKey . ', active, type');
-        $this->b_posts_table->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.post_id');
-        $this->b_posts_table->where('deleted_at IS NULL AND ' . $this->tableLang . '.slug="' . $slug . '"');
-        $b_posts_table = $this->b_posts_table->get()->getRow();
-        // echo $this->b_posts_table->getCompiledSelect();
+        $this->builder->select($this->table . '.' . $this->primaryKey . ', active, type');
+        $this->builder->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.post_id');
+        $this->builder->where('deleted_at IS NULL AND ' . $this->tableLang . '.slug="' . $slug . '"');
+        $b_posts_table = $this->builder->get()->getRow();
+        // echo $this->builder->getCompiledSelect();
         // exit;
         if (!empty($b_posts_table)) {
             if ($b_posts_table->active == '1')
@@ -225,19 +196,19 @@ class PostModel extends Model
 
     public function getLink(int $id, int $id_lang)
     {
-        $this->b_posts_table->select('slug');
-        $this->b_posts_table->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.post_id');
-        $this->b_posts_table->where([$this->table . '.id' => $id, 'id_lang' => $id_lang]);
-        $b_posts_table = $this->b_posts_table->get()->getRow();
+        $this->builder->select('slug');
+        $this->builder->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.post_id');
+        $this->builder->where([$this->table . '.id' => $id, 'id_lang' => $id_lang]);
+        $b_posts_table = $this->builder->get()->getRow();
         return $b_posts_table;
     }
 
     public function getArticlesByIdCategory(int $id_category, int $id_lang)
     {
-        $this->b_posts_table->select();
-        $this->b_posts_table->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.post_id');
-        $this->b_posts_table->where([$this->table . '.id_category_default' => $id_category, 'id_lang' => $id_lang, 'type' => 1]);
-        $b_posts_table = $this->b_posts_table->get()->getResult();
+        $this->builder->select();
+        $this->builder->join($this->tableLang, $this->table . '.' . $this->primaryKey . ' = ' . $this->tableLang . '.post_id');
+        $this->builder->where([$this->table . '.id_category_default' => $id_category, 'id_lang' => $id_lang, 'type' => 1]);
+        $b_posts_table = $this->builder->get()->getResult();
         if (!empty($b_posts_table)) {
             foreach ($b_posts_table as &$article) {
                 $article = new Post((array) $article);
@@ -250,9 +221,9 @@ class PostModel extends Model
     {
 
         //Article
-        $this->b_posts_table->select();
-        $this->b_posts_table->where([$this->primaryKey => $id]);
-        $getArticle = $this->b_posts_table->get()->getRow();
+        $this->builder->select();
+        $this->builder->where([$this->primaryKey => $id]);
+        $getArticle = $this->builder->get()->getRow();
 
         unset($getArticle->id);
         $getArticle->type = 4;
@@ -282,10 +253,10 @@ class PostModel extends Model
     //  */
     // public function GetArticle(string $column, string $data)
     // {
-    //     $this->b_posts_table->select("*, DATE_FORMAT(`created_at`,'Le %d-%m-%Y &agrave; %H:%i:%s') AS `created_at`, DATE_FORMAT(`updated_at`,'Le %d-%m-%Y &agrave; %H:%i:%s') AS `updated_at`");
-    //     $this->b_posts_table->where($column, $data);
+    //     $this->builder->select("*, DATE_FORMAT(`created_at`,'Le %d-%m-%Y &agrave; %H:%i:%s') AS `created_at`, DATE_FORMAT(`updated_at`,'Le %d-%m-%Y &agrave; %H:%i:%s') AS `updated_at`");
+    //     $this->builder->where($column, $data);
 
-    //     return $this->b_posts_table->get()->getRow();
+    //     return $this->builder->get()->getRow();
     // }
 
     // /**
@@ -293,11 +264,11 @@ class PostModel extends Model
     //  */
     // public function lastFive(): array
     // {
-    //     $this->b_posts_table->select("*, DATE_FORMAT(`created_at`,'<strong>%d-%m-%Y</strong> &agrave; <strong>%H:%i:%s</strong>') AS `created_at`, DATE_FORMAT(`updated_at`,'<strong>%d-%m-%Y</strong> &agrave; <strong>%H:%i:%s</strong>') AS `updated_at`");
-    //     $this->b_posts_table->limit('5');
-    //     $this->b_posts_table->orderBy('id', 'DESC');
+    //     $this->builder->select("*, DATE_FORMAT(`created_at`,'<strong>%d-%m-%Y</strong> &agrave; <strong>%H:%i:%s</strong>') AS `created_at`, DATE_FORMAT(`updated_at`,'<strong>%d-%m-%Y</strong> &agrave; <strong>%H:%i:%s</strong>') AS `updated_at`");
+    //     $this->builder->limit('5');
+    //     $this->builder->orderBy('id', 'DESC');
 
-    //     return $this->b_posts_table->get()->getResult();
+    //     return $this->builder->get()->getResult();
     // }
 
     // /**
@@ -305,10 +276,10 @@ class PostModel extends Model
     //  */
     // public function count_publied(): int
     // {
-    //     $this->b_posts_table->select('COUNT(id) as id');
-    //     $this->b_posts_table->where('published', 1);
+    //     $this->builder->select('COUNT(id) as id');
+    //     $this->builder->where('published', 1);
 
-    //     return $this->b_posts_table->get()->getRow()->id;
+    //     return $this->builder->get()->getRow()->id;
     // }
 
     // /**
@@ -316,12 +287,12 @@ class PostModel extends Model
     //  */
     // public function count_attCorrect(): int
     // {
-    //     $this->b_posts_table->select('COUNT(id) as id');
-    //     $this->b_posts_table->where('corriged', 0);
-    //     $this->b_posts_table->where('published', 0);
-    //     $this->b_posts_table->where('brouillon', 0);
+    //     $this->builder->select('COUNT(id) as id');
+    //     $this->builder->where('corriged', 0);
+    //     $this->builder->where('published', 0);
+    //     $this->builder->where('brouillon', 0);
 
-    //     return $this->b_posts_table->get()->getRow()->id;
+    //     return $this->builder->get()->getRow()->id;
     // }
 
     // /**
@@ -329,11 +300,11 @@ class PostModel extends Model
     //  */
     // public function count_attPublished(): int
     // {
-    //     $this->b_posts_table->select('COUNT(id) as id');
-    //     $this->b_posts_table->where('corriged', 1);
-    //     $this->b_posts_table->where('published', 0);
+    //     $this->builder->select('COUNT(id) as id');
+    //     $this->builder->where('corriged', 1);
+    //     $this->builder->where('published', 0);
 
-    //     return $this->b_posts_table->get()->getRow()->id;
+    //     return $this->builder->get()->getRow()->id;
     // }
 
     // /**
@@ -341,10 +312,10 @@ class PostModel extends Model
     //  */
     // public function count_brouillon(): int
     // {
-    //     $this->b_posts_table->select('COUNT(id) as id');
-    //     $this->b_posts_table->where('brouillon', 1);
+    //     $this->builder->select('COUNT(id) as id');
+    //     $this->builder->where('brouillon', 1);
 
-    //     return $this->b_posts_table->get()->getRow()->id;
+    //     return $this->builder->get()->getRow()->id;
     // }
 
     // /**
@@ -370,7 +341,7 @@ class PostModel extends Model
     //         'b_categories_table'     => $b_categories_table,
     //         'tags'           => $tags
     //     ];
-    //     $this->b_posts_table->insert($data);
+    //     $this->builder->insert($data);
 
     //     return $this->db->insertID();
     // }
@@ -415,9 +386,9 @@ class PostModel extends Model
     //         $data['brouillon'] = 0;
     //     }
 
-    //     $this->b_posts_table->where('id', $id);
-    //     $this->b_posts_table->set('updated_at', 'NOW()', false);
-    //     $this->b_posts_table->update($data);
+    //     $this->builder->where('id', $id);
+    //     $this->builder->set('updated_at', 'NOW()', false);
+    //     $this->builder->update($data);
 
     //     return true;
     // }
@@ -429,21 +400,21 @@ class PostModel extends Model
     //  */
     // public function getArticleListAdmin(int $type)
     // {
-    //     $this->b_posts_table->select("*, DATE_FORMAT(`created_at`,'<strong>%d-%m-%Y</strong> &agrave; <strong>%H:%i:%s</strong>') AS `created_at`, DATE_FORMAT(`updated_at`,'<strong>%d-%m-%Y</strong> &agrave; <strong>%H:%i:%s</strong>') AS `updated_at`");
+    //     $this->builder->select("*, DATE_FORMAT(`created_at`,'<strong>%d-%m-%Y</strong> &agrave; <strong>%H:%i:%s</strong>') AS `created_at`, DATE_FORMAT(`updated_at`,'<strong>%d-%m-%Y</strong> &agrave; <strong>%H:%i:%s</strong>') AS `updated_at`");
 
     //     if ($type == 1) {
-    //         $this->b_posts_table->where('published', 1);
+    //         $this->builder->where('published', 1);
     //     } elseif ($type == 2) {
-    //         $this->b_posts_table->where('corriged', 0);
-    //         $this->b_posts_table->where('published', 0);
-    //         $this->b_posts_table->where('brouillon', 0);
+    //         $this->builder->where('corriged', 0);
+    //         $this->builder->where('published', 0);
+    //         $this->builder->where('brouillon', 0);
     //     } elseif ($type == 3) {
-    //         $this->b_posts_table->where('corriged', 1);
-    //         $this->b_posts_table->where('published', 0);
+    //         $this->builder->where('corriged', 1);
+    //         $this->builder->where('published', 0);
     //     } elseif ($type == 4) {
-    //         $this->b_posts_table->where('brouillon', 1);
+    //         $this->builder->where('brouillon', 1);
     //     }
 
-    //     return $this->b_posts_table->get()->getResult();
+    //     return $this->builder->get()->getResult();
     // }
 }

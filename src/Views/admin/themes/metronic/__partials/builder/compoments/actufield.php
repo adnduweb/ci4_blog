@@ -5,6 +5,7 @@
 <div class="kt-portlet kt-portlet--height-fluid <?= ($field == '__field__') ? '' : ' kt-portlet--collapse'; ?>" id="kt_portlet_tools<?= $field; ?>">
     <div class="kt-portlet__head">
         <div class="kt-portlet__head-label">
+            <div class="handle-croix"> <i class="icon-xl la la-reorder"></i></div>
             <h3 class="kt-portlet__head-title">
                 <?= lang('Core.actualites'); ?> <?= isset($builder->handle) ? ' : ' . $builder->handle : ""; ?>
             </h3>

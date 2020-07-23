@@ -132,18 +132,17 @@ class BlogSeeder extends \CodeIgniter\Database\Seeder
 
         // gestionde l'application
         $rowsBlogTabs = [
-            'id_parent'         => 17,
-            'depth'             => 2,
-            'left'              => 11,
-            'right'             => 19,
-            'position'          => 1,
-            'section'           => 0,
-            'module'            => 'Adnduweb\Ci4_blog',
-            'class_name'        => 'AdminBlog',
-            'active'            =>  1,
-            'icon'              => '',
-            'slug'             => 'blog',
-            'name_controller'       => ''
+            'id_parent'       => 17,
+            'depth'           => 2,
+            'left'            => 11,
+            'right'           => 19,
+            'position'        => 1,
+            'section'         => 0,
+            'namespace'       => 'Adnduweb\Ci4_blog',
+            'class_name'      => '',
+            'active'          => 1,
+            'icon'            => '',
+            'slug'            => 'blog',
         ];
 
         $rowsBlogTabsLangs = [
@@ -159,17 +158,16 @@ class BlogSeeder extends \CodeIgniter\Database\Seeder
 
 
         $rowsArticlesTabs = [
-            'depth'             => 3,
-            'left'              => 12,
-            'right'             => 13,
-            'position'          => 1,
-            'section'           => 0,
-            'module'            => 'Adnduweb\Ci4_blog',
-            'class_name'        => 'AdminArticles',
-            'active'            =>  1,
-            'icon'              => '',
-            'slug'             => 'blog/posts',
-            'name_controller'       => ''
+            'depth'           => 3,
+            'left'            => 12,
+            'right'           => 13,
+            'position'        => 1,
+            'section'         => 0,
+            'namespace'       => 'Adnduweb\Ci4_blog',
+            'class_name'      => 'post',
+            'active'          => 1,
+            'icon'            => '',
+            'slug'            => 'blog/posts',
         ];
 
         $rowsArticlesTabsLangs = [
@@ -184,17 +182,16 @@ class BlogSeeder extends \CodeIgniter\Database\Seeder
         ];
 
         $rowsCatTabs = [
-            'depth'             => 3,
-            'left'              => 14,
-            'right'             => 15,
-            'position'          => 1,
-            'section'           => 0,
-            'module'            => 'Adnduweb\Ci4_blog',
-            'class_name'        => 'AdminCategorie',
-            'active'            =>  1,
-            'icon'              => '',
-            'slug'             => 'blog/categories',
-            'name_controller'       => ''
+            'depth'           => 3,
+            'left'            => 14,
+            'right'           => 15,
+            'position'        => 1,
+            'section'         => 0,
+            'namespace'       => 'Adnduweb\Ci4_blog',
+            'class_name'      => 'category',
+            'active'          => 1,
+            'icon'            => '',
+            'slug'            => 'blog/categories',
         ];
 
         $rowsCatTabsLangs = [
@@ -209,7 +206,7 @@ class BlogSeeder extends \CodeIgniter\Database\Seeder
         ];
 
 
-        $tabBlog = $db->table('tabs')->where('class_name', $rowsBlogTabs['class_name'])->get()->getRow();
+        $tabBlog = $db->table('tabs')->where('class_name', $rowsBlogTabs['class_name'])->where('namespace', $rowsBlogTabs['namespace'])->get()->getRow();
         //print_r($tab); exit;
         if (empty($tabBlog)) {
             // No setting - add the row
@@ -224,7 +221,7 @@ class BlogSeeder extends \CodeIgniter\Database\Seeder
             }
 
             // on insere les articles
-            $tabArticles = $db->table('tabs')->where('class_name', $rowsArticlesTabs['class_name'])->get()->getRow();
+            $tabArticles = $db->table('tabs')->where('class_name', $rowsArticlesTabs['class_name'])->where('namespace', $rowsArticlesTabs['namespace'])->get()->getRow();
             //print_r($tab); exit;
             if (empty($tabArticles)) {
                 // No setting - add the row
@@ -241,7 +238,7 @@ class BlogSeeder extends \CodeIgniter\Database\Seeder
             }
 
             // On Insére les categories
-            $tabCategorie = $db->table('tabs')->where('class_name', $rowsCatTabs['class_name'])->get()->getRow();
+            $tabCategorie = $db->table('tabs')->where('class_name', $rowsCatTabs['class_name'])->where('namespace', $rowsCatTabs['namespace'])->get()->getRow();
             //print_r($tab); exit;
             if (empty($tabCategorie)) {
                 // No setting - add the row
@@ -265,42 +262,42 @@ class BlogSeeder extends \CodeIgniter\Database\Seeder
          */
         $rowsPermissionsBlog = [
             [
-                'name'              => 'Posts::views',
+                'name'              => 'Post::view',
                 'description'       => 'Voir les articles',
                 'is_natif'          => '0',
             ],
             [
-                'name'              => 'Posts::create',
+                'name'              => 'Post::create',
                 'description'       => 'Créer des articles',
                 'is_natif'          => '0',
             ],
             [
-                'name'              => 'Posts::edit',
+                'name'              => 'Post::edit',
                 'description'       => 'Modifier les articles',
                 'is_natif'          => '0',
             ],
             [
-                'name'              => 'Posts::delete',
+                'name'              => 'Post::delete',
                 'description'       => 'Supprimer des articles',
                 'is_natif'          => '0',
             ],
             [
-                'name'              => 'Categories::views',
+                'name'              => 'PostCategorie::view',
                 'description'       => 'Voir les categories',
                 'is_natif'          => '0',
             ],
             [
-                'name'              => 'Categories::create',
+                'name'              => 'PostCategorie::create',
                 'description'       => 'Créer des categories',
                 'is_natif'          => '0',
             ],
             [
-                'name'              => 'Categories::edit',
+                'name'              => 'PostCategorie::edit',
                 'description'       => 'Modifier les categories',
                 'is_natif'          => '0',
             ],
             [
-                'name'              => 'Categories::delete',
+                'name'              => 'PostCategorie::delete',
                 'description'       => 'Supprimer des categories',
                 'is_natif'          => '0',
             ],

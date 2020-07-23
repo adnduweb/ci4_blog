@@ -14,12 +14,72 @@ use Adnduweb\Ci4_blog\Models\CategoryModel;
  *
  * @package App\Controllers\Admin
  */
-class AdminCategoriesController extends AdminController
+class AdminCategoryController extends AdminController
 {
 
-    use \App\Traits\BuilderModelTrait;
-    use \App\Traits\ModuleTrait;
-    use \Adnduweb\Ci4_blog\Traits\PostTrait;
+    use \App\Traits\BuilderModelTrait, \App\Traits\ModuleTrait, \Adnduweb\Ci4_blog\Traits\PostTrait;
+
+
+
+    /**
+     *  Module Object
+     */
+    public $module = true;
+
+    /**
+     * name controller
+     */
+    public $controller = 'post';
+
+    /**
+     * Localize slug
+     */
+    public $pathcontroller  = '/categories';
+
+    /**
+     * Localize namespace
+     */
+    public $namespace = 'Adnduweb/Ci4_blog';
+
+    /**
+     * Id Module
+     */
+    protected $idModule;
+
+    /**
+     * Localize slug
+     */
+    public $dirList  = 'blog';
+
+    /**
+     * Display default list column
+     */
+    public $fieldList = 'name';
+
+    /**
+     * Bouton add
+     */
+    public $add = true;
+
+    /**
+     * Display Multilangue
+     */
+    public $multilangue = true;
+
+    /**
+     * Event fake data
+     */
+    public $fake = true;
+
+    /**
+     * Update item List
+     */
+    public $toolbarUpdate = true;
+
+    /**
+     * Change Categorie
+     */
+    public $changeCategorie = true;
 
     /**
      * @var \Adnduweb\Ci4_blog\Models\CategoryModel
@@ -30,17 +90,6 @@ class AdminCategoriesController extends AdminController
      * @var \Adnduweb\Ci4_blog\Models\PostModel
      */
     private $post_model;
-    protected $idModule;
-    public $module          = true;
-    public $name_module     = 'blog';
-    public $controller      = 'blog';
-    public $item            = 'blog';
-    public $type            = 'Adnduweb/Ci4_blog';
-    public $pathcontroller  = '/public/blog/categories';
-    public $fieldList       = 'name';
-    public $add             = true;
-    public $multilangue     = true;
-    public $changeCategorie = true;
 
     /**
      * Article constructor.
@@ -52,14 +101,16 @@ class AdminCategoriesController extends AdminController
         parent::__construct();
         $this->tableModel = new CategoryModel();
         $this->post_model = new PostModel();
-        $this->module     = "blog";
         $this->idModule   = $this->getIdModule();
+
+        $this->data['paramJs']['baseSegmentAdmin'] = config('Blog')->urlMenuAdmin;
+        $this->pathcontroller  = '/' . config('Blog')->urlMenuAdmin . '/' .  $this->dirList . $this->pathcontroller;
     }
 
 
     public function renderViewList()
     {
-        AssetsBO::add_js([$this->get_current_theme_view('controllers/' . $this->controller . '/js/listCat.js', 'default')]);
+        AssetsBO::add_js([$this->get_current_theme_view('controllers/' . $this->dirList . '/js/listCat.js', 'default')]);
         helper('form');
 
         if (!has_permission(ucfirst($this->controller) . '::views', user()->id)) {
@@ -72,11 +123,11 @@ class AdminCategoriesController extends AdminController
         $this->data['changeCategorie']   = $this->changeCategorie;
         $this->data['fakedata']          = $this->fake;
         if (isset($this->add) && $this->add == true)
-            $this->data['add'] = lang('Core.add_' . $this->item);
-        $this->data['countList'] = $this->tableModel->getAllCount(['field' => $this->fieldList, 'sort' => 'ASC'], []);
+            $this->data['add'] = lang('Core.add_' . $this->controller);
+        $this->data['countList'] = $this->tableModel->getAllCount(['field' => $this->fieldList, 'sort' => 'ASC'], [], $this->tableModel->searchKtDatatable);
         $this->data['categories'] = $this->tableModel->getAllCategoriesOptionParent();
 
-        return view($this->get_current_theme_view('categorie/index', $this->type), $this->data);
+        return view($this->get_current_theme_view('categorie/index', $this->namespace), $this->data);
     }
 
 
@@ -93,8 +144,8 @@ class AdminCategoriesController extends AdminController
         } else {
             $this->data['form'] = $this->tableModel->where($this->tableModel->primaryKey, $id)->first();
             if (empty($this->data['form'])) {
-                Tools::set_message('danger', lang('Core.not_{0}_exist', [$this->item]), lang('Core.warning_error'));
-                return redirect()->to('/' . env('CI_SITE_AREA') . '/public/blog/categories');
+                Tools::set_message('danger', lang('Core.not_{0}_exist', [$this->controller]), lang('Core.warning_error'));
+                return redirect()->to('/' . env('CI_SITE_AREA') . $this->pathcontroller);
             }
         }
 
@@ -108,7 +159,7 @@ class AdminCategoriesController extends AdminController
 
         parent::renderForm($id);
         $this->data['edit_title'] = lang('Core.edit_categorie');
-        return view($this->get_current_theme_view('categorie/form', 'Adnduweb/Ci4_blog'), $this->data);
+        return view($this->get_current_theme_view('categorie/form', $this->namespace), $this->data);
     }
 
     public function postProcessEdit($param)
@@ -128,7 +179,7 @@ class AdminCategoriesController extends AdminController
         // Success!
         Tools::set_message('success', lang('Core.save_data'), lang('Core.cool_success'));
         $redirectAfterForm = [
-            'url'                   => '/' . env('CI_SITE_AREA') . '/' . user()->company_id . '/public/blog/categories',
+            'url'                   => '/' . env('CI_SITE_AREA') . $this->pathcontroller,
             'action'                => 'edit',
             'submithandler'         => $this->request->getPost('submithandler'),
             'id'                    => $categorieBase->id,
@@ -152,7 +203,7 @@ class AdminCategoriesController extends AdminController
         // Success!
         Tools::set_message('success', lang('Core.save_data'), lang('Core.cool_success'));
         $redirectAfterForm = [
-            'url'                   => '/' . env('CI_SITE_AREA') . '/' . user()->company_id . '/public/blog/categories',
+            'url'                   => '/' . env('CI_SITE_AREA') . $this->pathcontroller,
             'action'                => 'add',
             'submithandler'         => $this->request->getPost('submithandler'),
             'id'                    => $id,

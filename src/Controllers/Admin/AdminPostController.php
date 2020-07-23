@@ -16,12 +16,66 @@ use \CodeIgniter\Test\Fabricator;
  *
  * @package App\Controllers\Admin
  */
-class AdminPostsController extends AdminController
+class AdminPostController extends AdminController
 {
 
-    use \App\Traits\BuilderModelTrait;
-    use \App\Traits\ModuleTrait;
-    use \Adnduweb\Ci4_blog\Traits\PostTrait;
+    use \App\Traits\BuilderModelTrait, \App\Traits\ModuleTrait, \Adnduweb\Ci4_blog\Traits\PostTrait;
+
+
+    /**
+     *  Module Object
+     */
+    public $module = true;
+
+    /**
+     * name controller
+     */
+    public $controller = 'post';
+
+    /**
+     * Localize slug
+     */
+    public $pathcontroller  = '/posts';
+
+    /**
+     * Localize namespace
+     */
+    public $namespace = 'Adnduweb/Ci4_blog';
+
+    /**
+     * Id Module
+     */
+    protected $idModule;
+
+    /**
+     * Localize slug
+     */
+    public $dirList  = 'blog';
+
+    /**
+     * Display default list column
+     */
+    public $fieldList = 'b_posts.id';
+
+    /**
+     * Bouton add
+     */
+    public $add = true;
+
+    /**
+     * Display Multilangue
+     */
+    public $multilangue = true;
+
+    /**
+     * Event fake data
+     */
+    public $fake = true;
+
+    /**
+     * Update item List
+     */
+    public $toolbarUpdate = true;
 
     /**
      * @var \Adnduweb\Ci4_blog\Models\PostModel
@@ -33,19 +87,6 @@ class AdminPostsController extends AdminController
      */
     private $categories_model;
 
-
-    protected $idModule;
-    public $module         = true;
-    public $name_module    = 'blog';
-    public $controller     = 'blog';
-    public $item           = 'blog';
-    public $type           = 'Adnduweb/Ci4_blog';
-    public $pathcontroller = '/public/blog/posts';
-    public $fake           = true;
-    public $fieldList      = 'b_posts.id';
-    public $add            = true;
-    public $multilangue    = true;
-
     /**
      * Article constructor.
      *
@@ -56,14 +97,16 @@ class AdminPostsController extends AdminController
         parent::__construct();
         $this->tableModel       = new PostModel();
         $this->categories_model = new CategoryModel();
-        $this->module           = "blog";
         $this->idModule         = $this->getIdModule();
+
+        $this->data['paramJs']['baseSegmentAdmin'] = config('Blog')->urlMenuAdmin;
+        $this->pathcontroller  = '/' . config('Blog')->urlMenuAdmin . '/' .  $this->dirList . $this->pathcontroller;
     }
 
 
     public function renderViewList()
     {
-        AssetsBO::add_js([$this->get_current_theme_view('controllers/' . $this->controller . '/js/listBlog.js', 'default')]);
+        AssetsBO::add_js([$this->get_current_theme_view('controllers/' . $this->dirList . '/js/listBlog.js', 'default')]);
         $this->data['gettype'] = $this->getType();
         $parent =  parent::renderViewList();
         if (is_object($parent) && $parent->getStatusCode() == 307) {
@@ -97,8 +140,8 @@ class AdminPostsController extends AdminController
         } else {
             $this->data['form'] = $this->tableModel->where('id', $id)->first();
             if (empty($this->data['form'])) {
-                Tools::set_message('danger', lang('Core.not_{0}_exist', [$this->item]), lang('Core.warning_error'));
-                return redirect()->to('/' . env('CI_SITE_AREA') . '/' . user()->company_id . '/public/pages');
+                Tools::set_message('danger', lang('Core.not_{0}_exist', [$this->controller]), lang('Core.warning_error'));
+                return redirect()->to('/' . env('CI_SITE_AREA') . '/' . config('Blog')->urlMenuAdmin . '/' . $this->dirList . '/posts');
             }
         }
 
@@ -125,7 +168,7 @@ class AdminPostsController extends AdminController
 
         parent::renderForm($id);
         $this->data['edit_title'] = lang('Core.edit_article');
-        return view($this->get_current_theme_view('form', 'Adnduweb/Ci4_blog'), $this->data);
+        return view($this->get_current_theme_view('form', $this->namespace), $this->data);
     }
 
     public function postProcessEdit($param)
@@ -166,7 +209,7 @@ class AdminPostsController extends AdminController
         // Success!
         Tools::set_message('success', lang('Core.save_data'), lang('Core.cool_success'));
         $redirectAfterForm = [
-            'url'                   => '/' . env('CI_SITE_AREA') . '/' . user()->company_id . '/public/blog/posts',
+            'url'                   => '/' . env('CI_SITE_AREA') . '/' . config('Blog')->urlMenuAdmin . '/' . $this->dirList . '/posts',
             'action'                => 'edit',
             'submithandler'         => $this->request->getPost('submithandler'),
             'id'                    => $articleBase->id,
@@ -214,7 +257,7 @@ class AdminPostsController extends AdminController
         // Success!
         Tools::set_message('success', lang('Core.save_data'), lang('Core.cool_success'));
         $redirectAfterForm = [
-            'url'                   => '/' . env('CI_SITE_AREA') . '/' . user()->company_id . '/public/blog/posts',
+            'url'                   => '/' . env('CI_SITE_AREA') . '/' . config('Blog')->urlMenuAdmin . '/' . $this->dirList . '/posts',
             'action'                => 'add',
             'submithandler'         => $this->request->getPost('submithandler'),
             'id'                    => $id,
