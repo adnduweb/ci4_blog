@@ -235,8 +235,11 @@ class PostModel extends Model
         $this->b_posts_table_lang->select();
         $this->b_posts_table_lang->where([$this->primaryKeyLang => $id]);
         $getArticleLangs = $this->b_posts_table_lang->get()->getRow();
+        unset($getArticleLangs->id_post_lang);
         $getArticleLangs->{$this->primaryKeyLang} = $idNew;
+
         $this->b_posts_table_lang->insert((array) $getArticleLangs);
+        //print_r($getArticleLangs);exit;
 
         // On enregistre les b_categories_table par default
         $this->b_posts_categories->insert([$this->primaryKeyLang => $idNew, $this->primaryKeyCatLang => $getArticle->id_category_default]);

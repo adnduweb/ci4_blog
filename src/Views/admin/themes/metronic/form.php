@@ -1,6 +1,6 @@
 <?= $this->extend('/admin/themes/metronic/__layouts/layout_1') ?>
 <?= $this->section('main') ?>
-<div class="kt-content  kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor" id="kt_content">
+<div class="content  d-flex flex-column flex-column-fluid" id="kt_content">
 	<?= form_open_multipart('', ['id' => 'kt_apps_user_add_user_form', 'class' => 'kt-form', 'novalidate' => false]); ?>
 	<input type="hidden" name="action" value="<?= $action; ?>" />
 	<input type="hidden" name="module" value="<?= base64_encode('Adnduweb\Ci4_blog'); ?>" />
@@ -10,11 +10,12 @@
 	<?= $this->include('/admin/themes/metronic/__partials/kt_form_toolbar') ?>
 
 	<!-- begin:: Content -->
-	<div class="kt-container  kt-container--fluid  kt-grid__item kt-grid__item--fluid">
-		<div class="kt-portlet kt-portlet--tabs">
-			<div class="kt-portlet__head">
-				<div class="kt-portlet__head-toolbar">
-					<ul class="nav nav-tabs nav-tabs-space-xl nav-tabs-line nav-tabs-bold nav-tabs-line-3x nav-tabs-line-brand" role="tablist">
+	<div id="ContentBlog" class="d-flex flex-column-fluid">
+		<!--Begin::App-->
+		<div class="container-fluid">
+			<div class="flex-row ">
+				<div class="card card-custom py-5 px-5">
+					<ul class="nav nav-tabs nav-tabs-line mb-5" role="tablist">
 						<li class="nav-item">
 							<a class="nav-link active" data-toggle="tab" href="#kt_user_edit_tab_1" role="tab">
 								<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="kt-svg-icon">
@@ -38,27 +39,25 @@
 							</a>
 						</li>
 					</ul>
-				</div>
-			</div>
-			<div class="kt-portlet__body">
-				<div class="tab-content">
-					<div class="tab-pane active" id="kt_user_edit_tab_1" role="tabpanel">
-						<div class="kt-form kt-form--label-right">
-							<div class="kt-form__body">
-								<div class="kt-section kt-section--first">
-									<div class="kt-section__body">
-										<?= $this->include('\Adnduweb\Ci4_blog\Views\admin\themes\metronic\__form_section\general') ?>
+					<div class="tab-content mt-5">
+						<div class="tab-pane active" id="kt_user_edit_tab_1" role="tabpanel">
+							<div class="kt-form kt-form--label-right">
+								<div class="kt-form__body">
+									<div class="kt-section kt-section--first">
+										<div class="kt-section__body">
+											<?= $this->include('\Adnduweb\Ci4_blog\Views\admin\themes\metronic\__form_section\general') ?>
+										</div>
 									</div>
 								</div>
 							</div>
 						</div>
-					</div>
-					<div class="tab-pane" id="kt_user_edit_tab_2" role="tabpanel">
-						<div class="kt-form kt-form--label-right">
-							<div class="kt-form__body">
-								<div class="kt-section kt-section--first">
-									<div class="kt-section__body">
-										<?= View('/admin/themes/metronic/__partials/builder/builder', ['compoment_authorized' => ['textfield']]) ?>
+						<div class="tab-pane" id="kt_user_edit_tab_2" role="tabpanel">
+							<div class="kt-form kt-form--label-right">
+								<div class="kt-form__body">
+									<div class="kt-section kt-section--first">
+										<div class="kt-section__body">
+											<?= View('/admin/themes/metronic/__partials/builder/builder', ['compoment_authorized' => ['textfield']]) ?>
+										</div>
 									</div>
 								</div>
 							</div>
@@ -68,7 +67,6 @@
 			</div>
 		</div>
 	</div>
-
 
 	<!-- end:: Content -->
 	<?= form_close(); ?>

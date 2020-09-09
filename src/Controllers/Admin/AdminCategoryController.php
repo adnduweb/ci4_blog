@@ -69,7 +69,7 @@ class AdminCategoryController extends AdminController
     /**
      * Event fake data
      */
-    public $fake = true;
+    public $fake = false;
 
     /**
      * Update item List
@@ -80,6 +80,11 @@ class AdminCategoryController extends AdminController
      * Change Categorie
      */
     public $changeCategorie = true;
+
+    /**
+     *  Bool Export
+     */
+    public$toolbarExport   = false;
 
     /**
      * @var \Adnduweb\Ci4_blog\Models\CategoryModel
@@ -107,7 +112,7 @@ class AdminCategoryController extends AdminController
         $this->pathcontroller  = '/' . config('Blog')->urlMenuAdmin . '/' .  $this->dirList . $this->pathcontroller;
     }
 
-
+ 
     public function renderViewList()
     {
         AssetsBO::add_js([$this->get_current_theme_view('controllers/' . $this->dirList . '/js/listCat.js', 'default')]);
@@ -122,8 +127,9 @@ class AdminCategoryController extends AdminController
         $this->data['toolbarUpdate']     = true;
         $this->data['changeCategorie']   = $this->changeCategorie;
         $this->data['fakedata']          = $this->fake;
+        $this->data['toolbarExport']     = $this->toolbarExport;
         if (isset($this->add) && $this->add == true)
-            $this->data['add'] = lang('Core.add_' . $this->controller);
+            $this->data['add'] = lang('Core.add_' . $this->controller . '_cat');
         $this->data['countList'] = $this->tableModel->getAllCount(['field' => $this->fieldList, 'sort' => 'ASC'], [], $this->tableModel->searchKtDatatable);
         $this->data['categories'] = $this->tableModel->getAllCategoriesOptionParent();
 

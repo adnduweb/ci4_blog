@@ -23,20 +23,22 @@
 <div class="form-group form-group-sm row">
     <label for="etat" class="col-xl-3 col-lg-3 col-form-label"><?= ucfirst(lang('Core.etat')); ?></label>
     <div class="col-lg-9 col-xl-6">
-        <select required name="type" class="form-control selectpicker file kt-selectpicker" publied-actions-box="true" title="<?= ucfirst(lang('Core.choose_one_of_the_following')); ?>" id="type">
+        <select required name="type" class="form-control file kt-selectpicker" publied-actions-box="true" title="<?= ucfirst(lang('Core.choose_one_of_the_following')); ?>" id="type">
             <?php foreach ($form->gettype as $k => $v) { ?>
                 <option <?= $k == $form->type ? 'selected' : ''; ?> value="<?= $k; ?>"><?= lang('Core.' . $v); ?></option>
             <?php } ?>
         </select>
+        <div class="invalid-feedback"><?= lang('Core.this_field_is_requis'); ?></div>
     </div>
 </div>
 
 <div class="form-group form-group-sm row">
     <label for="categorie" class="col-xl-3 col-lg-3 col-form-label"><?= ucfirst(lang('Core.categorie')); ?></label>
     <div class="col-lg-9 col-xl-6">
-        <select required name="id_category_default[]" class="form-control selectpicker file kt-selectpicker" publied-actions-box="true" title="<?= ucfirst(lang('Core.choose_one_of_the_following')); ?>" id="id_category_default">
+        <select required name="id_category_default[]" class="form-control kt-selectpicker" publied-actions-box="true" title="<?= ucfirst(lang('Core.choose_one_of_the_following')); ?>" id="id_category_default">
             <?= generate_menuOption(0, 0, $form->allCategories, $form->id_category_default); ?>
         </select>
+        <div class="invalid-feedback"><?= lang('Core.this_field_is_requis'); ?></div>
     </div>
 </div>
 
